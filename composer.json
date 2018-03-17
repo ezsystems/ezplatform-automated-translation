@@ -1,0 +1,43 @@
+{
+    "name": "ezsystems/ezplatform-automated-translation",
+    "description": "eZ Platform Automated Translation Bundle provides interfaces to automatically translate a new content translation from different translation providers.",
+    "keywords": [
+        "novactive",
+        "ezplatform",
+        "translation",
+        "deepl",
+        "googletranslate"
+    ],
+    "homepage": "https://github.com/ezsystems/ezplatform-automated-translation",
+    "type": "ezplatform-bundle",
+    "authors": [
+        {
+            "name": "Novactive",
+            "homepage": "http://www.novactive.us",
+            "email": "s.morel@novactive.com"
+        }
+    ],
+    "license": [
+        "GPL-2.0"
+    ],
+    "require": {
+        "php": "^7.1"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-master",
+        "squizlabs/php_codesniffer": "^3.2",
+        "phpmd/phpmd": "^2.6",
+        "friendsofphp/php-cs-fixer": "^2.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "EzSystems\\EzPlatformAutomatedTranslationBundle\\": "bundle",
+            "EzSystems\\EzPlatformAutomatedTranslationBundle\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}

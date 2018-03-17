@@ -1,0 +1,8 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        public: false
+
+
