@@ -4,5 +4,15 @@
 
 ## Basic Configuration
 
+```yaml
+# app/config/config.yml
 
+ez_platform_automated_translation:
+    system:
+        default:
+            configurations:
+                google:
+                    apiKey: "xxx"
+                    
+```
 

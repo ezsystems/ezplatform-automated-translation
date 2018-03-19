@@ -35,6 +35,6 @@ class EzPlatformAutomatedTranslationExtension extends Extension
         $loader->load('default_settings.yml');
         $loader->load('services.yml');
         $processor = new ConfigurationProcessor($container, $this->getAlias());
-        //@todo
+        $processor->mapSetting('configurations', $config);
     }
 }

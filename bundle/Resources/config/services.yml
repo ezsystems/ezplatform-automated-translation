@@ -5,4 +5,17 @@ services:
         autowire: true
         public: false
 
+    EzSystems\EzPlatformAutomatedTranslation\:
+        resource: '../../../lib'
+
+    EzSystems\EzPlatformAutomatedTranslation\Client\:
+        resource: '../../../lib/Client'
+        tags: ['ezplatform.automated_translation.client']
+
+    EzSystems\EzPlatformAutomatedTranslation\ClientProvider:
+        arguments: [!tagged ezplatform.automated_translation.client]
+
+    EzSystems\EzPlatformAutomatedTranslationBundle\Command\:
+        resource: '../../Command/*'
+        tags: ["console.command"]
 

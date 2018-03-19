@@ -1,1 +1,3 @@
 parameters:
+    ez_platform_automated_translation.default.configurations: ~
+
