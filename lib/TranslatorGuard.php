@@ -17,6 +17,15 @@ use eZ\Publish\API\Repository\Values\Content\Content;
 
 /**
  * Class TranslatorGuard
+ *
+ * This class is in charge to check that the Translator can do whatever it wants to do
+ *
+ * - check that the source Language Code exists on the Source Content
+ * - check that the target Language Code exists in the Content Repository
+ * - provides enforce* methods that work like a "assertion methods" and triggers Exceptions
+ *
+ * Also it is in charge to get the Content in the source Language Code
+ *
  */
 class TranslatorGuard
 {
