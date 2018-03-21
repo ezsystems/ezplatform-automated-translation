@@ -1,0 +1,4 @@
+services:
+   EzSystems\EzPlatformAutomatedTranslationBundle\Controller\:
+        resource: "../../Controller/*"
+        parent: EzSystems\EzPlatformAdminUiBundle\Controller\Controller

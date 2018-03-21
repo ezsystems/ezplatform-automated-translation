@@ -21,7 +21,15 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 class EzPlatformAutomatedTranslationBundle extends Bundle
 {
     /**
-     * @param ContainerBuilder $container
+     * {@inheritdoc}
+     */
+    public function getParent(): ?string
+    {
+        return 'EzPlatformAdminUiBundle';
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function build(ContainerBuilder $container): void
     {

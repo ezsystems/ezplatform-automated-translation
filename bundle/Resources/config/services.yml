@@ -19,3 +19,10 @@ services:
         resource: '../../Command/*'
         tags: ["console.command"]
 
+
+    EzSystems\EzPlatformAutomatedTranslationBundle\Form\Extension\TranslationAddType:
+        tags:
+            - { name: form.type_extension, extended_type: EzSystems\EzPlatformAdminUi\Form\Type\Content\Translation\TranslationAddType }
+
+
+
