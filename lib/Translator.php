@@ -15,9 +15,11 @@ namespace EzSystems\EzPlatformAutomatedTranslation;
 
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
+use EzSystems\EzPlatformAdminUi\RepositoryForms\Data\ContentTranslationData;
 use EzSystems\EzPlatformAutomatedTranslation\Client\ClientInterface;
 use EzSystems\EzPlatformAutomatedTranslation\Client\Google;
 use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
+use EzSystems\RepositoryForms\Data\Content\FieldData;
 
 /**
  * Class Translator
@@ -66,20 +68,20 @@ class Translator
      *
      * @return Content
      */
-    public function translate(string $from, string $to, string $remoteServiceKey, Content $content): Content
+    public function translateContent(string $from, string $to, string $remoteServiceKey, Content $content): Content
     {
         $this->guard->enforceSourceLanguageVersionExist($content, $from);
         $this->guard->enforceTargetLanguageExist($to);
-        $sourceContent = $this->guard->fetchContent($content, $from);
-        $encoder       = new Encoder();
-        $payload       = $encoder->encode($sourceContent->getFields());
-        $posixFrom     = $this->localeConverter->convertToPOSIX($from);
-        $posixTo       = $this->localeConverter->convertToPOSIX($to);
-        $remoteService = $this->clientProvider->get($remoteServiceKey);
+        $sourceContent     = $this->guard->fetchContent($content, $from);
+        $encoder           = new Encoder();
+        $payload           = $encoder->encode($sourceContent->getFields());
+        $posixFrom         = $this->localeConverter->convertToPOSIX($from);
+        $posixTo           = $this->localeConverter->convertToPOSIX($to);
+        $remoteService     = $this->clientProvider->get($remoteServiceKey);
         $translatedPayload = $remoteService->translate($payload, $posixFrom, $posixTo);
         $translatedFields  = $encoder->decode($translatedPayload);
 
-        return $this->createNewTranslation($content, $to, $translatedFields);
+        return $this->createNewTranslationDraft($content, $to, $translatedFields);
     }
 
     /**
@@ -89,7 +91,7 @@ class Translator
      *
      * @return Content
      */
-    private function createNewTranslation(
+    private function createNewTranslationDraft(
         Content $sourceContent,
         string $newLanguageCode,
         array $translatedFields
@@ -106,11 +108,12 @@ class Translator
         foreach ($contentType->getFieldDefinitions() as $field) {
             /** @var FieldDefinition $field */
             $fieldName = $field->identifier;
-            $newValue  = $translatedFields[$fieldName] ?? $sourceContent->getFieldValue($fieldName);
+            $newValue  = isset($translatedFields[$fieldName]) ? trim(
+                $translatedFields[$fieldName]
+            ) : $sourceContent->getFieldValue($fieldName);
             $contentUpdateStruct->setField($fieldName, $newValue);
         }
-        $contentDraft = $contentService->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
 
-        return $contentService->publishVersion($contentDraft->versionInfo);
+        return $contentService->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
     }
 }

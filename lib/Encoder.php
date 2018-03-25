@@ -16,6 +16,7 @@ namespace EzSystems\EzPlatformAutomatedTranslation;
 use eZ\Publish\API\Repository\Values\Content\Field;
 use eZ\Publish\Core\FieldType\TextLine\Value as TextLineValue;
 use eZ\Publish\Core\FieldType\RichText\Value as RichTextValue;
+use EzSystems\RepositoryForms\Data\Content\FieldData;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 
 /**
@@ -80,15 +81,16 @@ class Encoder
     {
         $results = [];
         foreach ($fields as $field) {
+            $identifier = $field->fieldDefIdentifier;
             // Note that TextBlock is a TextLine
             if ($field->value instanceof TextLineValue) {
-                $value                               = (string) $field->value;
-                $results[$field->fieldDefIdentifier] = $value;
+                $value                = (string) $field->value;
+                $results[$identifier] = $value;
                 continue;
             }
             if ($field->value instanceof RichTextValue) {
                 // we need to remove that to make it a good XML
-                $results[$field->fieldDefIdentifier] = substr((string) $field->value, \strlen(self::XML_MARKUP));
+                $results[$identifier] = substr((string) $field->value, \strlen(self::XML_MARKUP));
             }
         }
         $encoder = new XmlEncoder();
@@ -116,8 +118,6 @@ class Encoder
             ['<![CDATA['.self::XML_MARKUP, ']]>'],
             $xml
         );
-
         return $encoder->decode($data, XmlEncoder::FORMAT);
-
     }
 }

@@ -24,5 +24,8 @@ services:
         tags:
             - { name: form.type_extension, extended_type: EzSystems\EzPlatformAdminUi\Form\Type\Content\Translation\TranslationAddType }
 
+    EzSystems\EzPlatformAutomatedTranslationBundle\Form\Extension\ContentEditType:
+        tags:
+            - { name: form.type_extension, extended_type: EzSystems\RepositoryForms\Form\Type\Content\ContentEditType }
 
 

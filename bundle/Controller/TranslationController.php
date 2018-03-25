@@ -32,8 +32,8 @@ class TranslationController extends BaseTranslationController
             return $response;
         }
 
-        $targetUrl = $response->getTargetUrl();
-        $pattern   = str_replace(
+        $targetUrl    = $response->getTargetUrl();
+        $pattern      = str_replace(
             '/',
             '\/',
             urldecode(
@@ -47,15 +47,12 @@ class TranslationController extends BaseTranslationController
                 )
             )
         );
+        $serviceAlias = $request->request->get('add-translation')['translatorAlias'];
         if (1 !== preg_match("#{$pattern}#", $targetUrl)) {
             return $response;
         }
+        $response->setTargetUrl(sprintf('%s?translatorAlias=%s', $targetUrl, $serviceAlias));
 
-        //@todo
-        //- somehow pass the service selected to ezplatform.content.translate, adding a query params
-        //- convert ContentTranslationMapper to a service and give him access to:
-        //- request stack to retrieve the service selected to translate
-        // - translator to actually translate
         return $response;
     }
 }

@@ -63,7 +63,7 @@ class TranslateContentCommand extends Command
                 'service',
                 InputArgument::REQUIRED,
                 'Remote Service for Translation. <comment>[' .
-                implode(' ', $this->clientProvider->getConfiguredClients()) . ']</comment>'
+                implode(' ', array_keys($this->clientProvider->getClients())) . ']</comment>'
             )
             ->addOption('from', '--from', InputOption::VALUE_REQUIRED, 'Source Language')
             ->addOption('to', '--to', InputOption::VALUE_REQUIRED, 'Target Language');
@@ -76,12 +76,13 @@ class TranslateContentCommand extends Command
     {
         $contentId = (int) $input->getArgument('contentId');
         $content   = $this->repository->getContentService()->loadContent($contentId);
-        $this->translator->translate(
+        $draft     = $this->translator->translateContent(
             $input->getOption('from'),
             $input->getOption('to'),
             $input->getArgument('service'),
             $content
         );
+        $this->repository->getContentService()->publishVersion($draft->versionInfo);
         $output->writeln("Translation to {$contentId} Done.");
     }
 

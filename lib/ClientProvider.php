@@ -80,10 +80,10 @@ class ClientProvider
     }
 
     /**
-     * @return array
+     * @return ClientInterface[]
      */
-    public function getConfiguredClients(): array
+    public function getClients(): array
     {
-        return array_keys($this->clients);
+        return $this->clients;
     }
 }
