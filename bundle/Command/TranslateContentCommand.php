@@ -76,7 +76,7 @@ class TranslateContentCommand extends Command
     {
         $contentId = (int) $input->getArgument('contentId');
         $content   = $this->repository->getContentService()->loadContent($contentId);
-        $draft     = $this->translator->translateContent(
+        $draft     = $this->translator->getTranslatedContent(
             $input->getOption('from'),
             $input->getOption('to'),
             $input->getArgument('service'),

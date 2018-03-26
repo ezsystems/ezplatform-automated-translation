@@ -84,23 +84,24 @@ class ContentEditType extends AbstractTypeExtension
                 if (null === $request) {
                     return;
                 }
-                $fromLanguageCode             = $request->attributes->get('fromLanguageCode') ?? '';
-                $toLanguageCode               = $request->attributes->get('toLanguageCode') ?? '';
-                $serviceAlias                 = $request->query->get('translatorAlias');
-                $content                      = $this->translator->translateContent(
+                $fromLanguageCode = $request->attributes->get('fromLanguageCode') ?? '';
+                $toLanguageCode   = $request->attributes->get('toLanguageCode') ?? '';
+                $serviceAlias     = $request->query->get('translatorAlias');
+
+                $translatedFields = $this->translator->getTranslatedFields(
                     $fromLanguageCode,
                     $toLanguageCode,
                     $serviceAlias,
                     $data->content
                 );
-                $contentType                  = $this->contentTypeService->loadContentType(
-                    $content->contentInfo->contentTypeId
+                $contentType      = $this->contentTypeService->loadContentType(
+                    $data->content->contentInfo->contentTypeId
                 );
-                $newData                      = new ContentTranslationData(['content' => $content]);
-                foreach ($content->getFieldsByLanguage() as $field) {
+                foreach ($data->content->getFieldsByLanguage() as $field) {
                     $fieldDef   = $contentType->getFieldDefinition($field->fieldDefIdentifier);
-                    $fieldValue = $content->getFieldValue($fieldDef->identifier, $toLanguageCode);
-                    $newData->addFieldData(
+                    $fieldValue = $translatedFields[$fieldDef->identifier] ??
+                                  $data->content->getFieldValue($fieldDef->identifier, $fromLanguageCode);
+                    $data->addFieldData(
                         new FieldData(
                             [
                                 'fieldDefinition' => $fieldDef,
@@ -110,7 +111,7 @@ class ContentEditType extends AbstractTypeExtension
                         )
                     );
                 }
-                $event->setData($newData);
+                $event->setData($data);
             }
         );
     }

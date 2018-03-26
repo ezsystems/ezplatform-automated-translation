@@ -68,7 +68,7 @@ class Translator
      *
      * @return Content
      */
-    public function translateContent(string $from, string $to, string $remoteServiceKey, Content $content): Content
+    public function getTranslatedFields(string $from, string $to, string $remoteServiceKey, Content $content): array
     {
         $this->guard->enforceSourceLanguageVersionExist($content, $from);
         $this->guard->enforceTargetLanguageExist($to);
@@ -79,38 +79,35 @@ class Translator
         $posixTo           = $this->localeConverter->convertToPOSIX($to);
         $remoteService     = $this->clientProvider->get($remoteServiceKey);
         $translatedPayload = $remoteService->translate($payload, $posixFrom, $posixTo);
-        $translatedFields  = $encoder->decode($translatedPayload);
 
-        return $this->createNewTranslationDraft($content, $to, $translatedFields);
+        return $encoder->decode($translatedPayload);
     }
 
     /**
-     * @param Content $sourceContent
-     * @param string  $languageCode
-     * @param array   $translatedFields
+     * @param string  $from
+     * @param string  $to
+     * @param string  $remoteServiceKey
+     * @param Content $content
      *
      * @return Content
      */
-    private function createNewTranslationDraft(
-        Content $sourceContent,
-        string $newLanguageCode,
-        array $translatedFields
-    ): Content {
+    public function getTranslatedContent(string $from, string $to, string $remoteServiceKey, Content $content): Content
+    {
+        $translatedFields = $this->getTranslatedFields($from, $to, $remoteServiceKey, $content);
+
         $contentService                           = $this->repository->getContentService();
-        $contentDraft                             = $contentService->createContentDraft($sourceContent->contentInfo);
+        $contentDraft                             = $contentService->createContentDraft($content->contentInfo);
         $contentUpdateStruct                      = $contentService->newContentUpdateStruct();
-        $contentUpdateStruct->initialLanguageCode = $newLanguageCode;
+        $contentUpdateStruct->initialLanguageCode = $to;
 
         $contentType = $this->repository->getContentTypeService()->loadContentType(
-            $sourceContent->contentInfo->contentTypeId
+            $content->contentInfo->contentTypeId
         );
 
         foreach ($contentType->getFieldDefinitions() as $field) {
             /** @var FieldDefinition $field */
             $fieldName = $field->identifier;
-            $newValue  = isset($translatedFields[$fieldName]) ? trim(
-                $translatedFields[$fieldName]
-            ) : $sourceContent->getFieldValue($fieldName);
+            $newValue  = $translatedFields[$fieldName] ?? $content->getFieldValue($fieldName);
             $contentUpdateStruct->setField($fieldName, $newValue);
         }
 

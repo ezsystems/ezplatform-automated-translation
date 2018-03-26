@@ -82,15 +82,17 @@ class Encoder
         $results = [];
         foreach ($fields as $field) {
             $identifier = $field->fieldDefIdentifier;
+            $type       = \get_class($field->value);
             // Note that TextBlock is a TextLine
             if ($field->value instanceof TextLineValue) {
                 $value                = (string) $field->value;
-                $results[$identifier] = $value;
+                $results[$identifier] = ['#' => $value, '@type' => $type];
                 continue;
             }
             if ($field->value instanceof RichTextValue) {
                 // we need to remove that to make it a good XML
-                $results[$identifier] = substr((string) $field->value, \strlen(self::XML_MARKUP));
+                $value                = substr((string) $field->value, \strlen(self::XML_MARKUP));
+                $results[$identifier] = ['#' => $value, '@type' => $type];
             }
         }
         $encoder = new XmlEncoder();
@@ -112,12 +114,23 @@ class Encoder
      */
     public function decode(string $xml): array
     {
-        $encoder = new XmlEncoder();
-        $data    = str_replace(
+        $encoder     = new XmlEncoder();
+        $data        = str_replace(
             ['<'.self::CDATA_FAKER_TAG.'>', '</'.self::CDATA_FAKER_TAG.'>'],
             ['<![CDATA['.self::XML_MARKUP, ']]>'],
             $xml
         );
-        return $encoder->decode($data, XmlEncoder::FORMAT);
+        $decodeArray = $encoder->decode($data, XmlEncoder::FORMAT);
+        $results     = [];
+        foreach ($decodeArray as $fieldIdentifier => $xmlValue) {
+            $type         = $xmlValue['@type'];
+            $value        = $xmlValue['#'];
+            $trimmedValue = trim($value);
+            if ('' === $trimmedValue) {
+                continue;
+            }
+            $results[$fieldIdentifier] = new $type($trimmedValue);
+        }
+        return $results;
     }
 }
