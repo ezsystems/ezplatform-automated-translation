@@ -5,7 +5,6 @@
  * @package   EzSystems\eZAutomatedTranslationBundle
  *
  * @author    Novactive <s.morel@novactive.com>
- *
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
  * @license   For full copyright and license information view LICENSE file distributed with this source code.
  */
@@ -16,7 +15,7 @@ namespace EzSystems\EzPlatformAutomatedTranslation;
 use eZ\Publish\API\Repository\Values\Content\Content;
 
 /**
- * Class TranslatorGuard
+ * Class TranslatorGuard.
  *
  * This class is in charge to check that the Translator can do whatever it wants to do
  *
@@ -25,7 +24,6 @@ use eZ\Publish\API\Repository\Values\Content\Content;
  * - provides enforce* methods that work like a "assertion methods" and triggers Exceptions
  *
  * Also it is in charge to get the Content in the source Language Code
- *
  */
 class TranslatorGuard
 {
@@ -39,7 +37,7 @@ class TranslatorGuard
      */
     public function isLanguageVersionExist(Content $content, string $languageCode): bool
     {
-        return \in_array($languageCode, $currentLanguageCodes = $content->versionInfo->languageCodes);
+        return \in_array($languageCode, $content->versionInfo->languageCodes);
     }
 
     /**
@@ -88,8 +86,12 @@ class TranslatorGuard
      *
      * @return Content
      */
-    public function fetchContent(Content $content, string $languageCode): Content
+    public function fetchContent(Content $content, ?string $languageCode): Content
     {
+        if (null === $languageCode) {
+            return $this->repository->getContentService()->loadContentByContentInfo($content->contentInfo);
+        }
+
         return $this->repository->getContentService()->loadContentByContentInfo($content->contentInfo, [$languageCode]);
     }
 }

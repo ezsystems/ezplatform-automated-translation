@@ -10,7 +10,7 @@
  */
 declare(strict_types=1);
 
-$finder = PhpCsFixer\Finder::create()->in('bundle')->in('tests');
+$finder = PhpCsFixer\Finder::create()->in('bundle')->in('lib')->in('tests');
 
 return PhpCsFixer\Config::create()
                         ->setRules(

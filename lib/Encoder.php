@@ -5,7 +5,6 @@
  * @package   EzSystems\eZAutomatedTranslationBundle
  *
  * @author    Novactive <s.morel@novactive.com>
- *
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
  * @license   For full copyright and license information view LICENSE file distributed with this source code.
  */
@@ -14,13 +13,12 @@ declare(strict_types=1);
 namespace EzSystems\EzPlatformAutomatedTranslation;
 
 use eZ\Publish\API\Repository\Values\Content\Field;
-use eZ\Publish\Core\FieldType\TextLine\Value as TextLineValue;
 use eZ\Publish\Core\FieldType\RichText\Value as RichTextValue;
-use EzSystems\RepositoryForms\Data\Content\FieldData;
+use eZ\Publish\Core\FieldType\TextLine\Value as TextLineValue;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 
 /**
- * Class Encoder
+ * Class Encoder.
  *
  * Google Translate and Deepl (and probably others) are able to "ignore" markups when they translate
  *
@@ -60,13 +58,11 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
  * Wrapping the valid XML in "<fakecdata>", the global XML is still valid, and the translation works
  *
  * The decode function reverses the wrapping.
- *
  */
 class Encoder
 {
-
     /**
-     * Use to fake the <![CDATA[ something ]]> to <fakecdata> something </fakecdata>
+     * Use to fake the <![CDATA[ something ]]> to <fakecdata> something </fakecdata>.
      */
     private const CDATA_FAKER_TAG = 'fakecdata';
 
@@ -100,7 +96,7 @@ class Encoder
         // here Encoder has  decorated with CDATA, we don't want the CDATA
         $payload = str_replace(
             ['<![CDATA[', ']]>'],
-            ['<'.self::CDATA_FAKER_TAG.'>', '</'.self::CDATA_FAKER_TAG.'>'],
+            ['<' . self::CDATA_FAKER_TAG . '>', '</' . self::CDATA_FAKER_TAG . '>'],
             $payload
         );
 
@@ -116,8 +112,8 @@ class Encoder
     {
         $encoder     = new XmlEncoder();
         $data        = str_replace(
-            ['<'.self::CDATA_FAKER_TAG.'>', '</'.self::CDATA_FAKER_TAG.'>'],
-            ['<![CDATA['.self::XML_MARKUP, ']]>'],
+            ['<' . self::CDATA_FAKER_TAG . '>', '</' . self::CDATA_FAKER_TAG . '>'],
+            ['<![CDATA[' . self::XML_MARKUP, ']]>'],
             $xml
         );
         $decodeArray = $encoder->decode($data, XmlEncoder::FORMAT);
@@ -131,6 +127,7 @@ class Encoder
             }
             $results[$fieldIdentifier] = new $type($trimmedValue);
         }
+
         return $results;
     }
 }

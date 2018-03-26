@@ -35,7 +35,7 @@ class TranslationController extends BaseTranslationController
         $targetUrl    = $response->getTargetUrl();
         $pattern      = str_replace(
             '/',
-            '\/',
+            '\/?',
             urldecode(
                 $this->generateUrl(
                     'ezplatform.content.translate',

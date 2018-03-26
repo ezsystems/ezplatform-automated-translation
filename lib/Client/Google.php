@@ -5,7 +5,6 @@
  * @package   EzSystems\eZAutomatedTranslationBundle
  *
  * @author    Novactive <s.morel@novactive.com>
- *
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
  * @license   For full copyright and license information view LICENSE file distributed with this source code.
  */
@@ -16,7 +15,7 @@ namespace EzSystems\EzPlatformAutomatedTranslation\Client;
 use GuzzleHttp\Client;
 
 /**
- * Class GoogleTranslate:
+ * Class GoogleTranslate:.
  */
 class Google implements ClientInterface
 {
@@ -28,9 +27,17 @@ class Google implements ClientInterface
     /**
      * {@inheritdoc}
      */
-    public function getServiceName(): string
+    public function getServiceAlias(): string
     {
-        return "google";
+        return 'google';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getServiceFullName(): string
+    {
+        return 'Google Translate';
     }
 
     /**
@@ -40,7 +47,7 @@ class Google implements ClientInterface
     {
         if (!isset($configuration['apiKey'])) {
             throw new \RuntimeException(
-                "Remote Translation service ".self::class." cannot autoconfigured without apiKey"
+                'Remote Translation service ' . self::class . ' cannot autoconfigured without apiKey'
             );
         }
         $this->apiKey = $configuration['apiKey'];
@@ -49,10 +56,20 @@ class Google implements ClientInterface
     /**
      * {@inheritdoc}
      */
-    public function translate(string $payload, string $from, string $to): string
+    public function translate(string $payload, ?string $from, string $to): string
     {
-        $from = $this->normalized($from);
-        $to   = $this->normalized($to);
+        $parameters = [
+            'key'    => $this->apiKey,
+            'target' => $this->normalized($to),
+            'format' => 'html',
+            'q'      => $payload,
+        ];
+
+        if (null !== $from) {
+            $parameters += [
+                'source' => $this->normalized($from),
+            ];
+        }
 
         $http     = new Client(
             [
@@ -60,18 +77,7 @@ class Google implements ClientInterface
                 'timeout'  => 2.0,
             ]
         );
-        $response = $http->post(
-            '/language/translate/v2',
-            [
-                'form_params' => [
-                    'key'    => 'AIzaSyC2RrsX3he5YW2xCNCMeK5MFIT3Eh1DCK8',
-                    'target' => $to,
-                    'source' => $from,
-                    'format' => 'html',
-                    'q'      => $payload
-                ]
-            ]
-        );
+        $response = $http->post('/language/translate/v2', ['form_params' => $parameters]);
         $json     = json_decode($response->getBody()->getContents());
 
         return $json->data->translations[0]->translatedText;
@@ -110,7 +116,7 @@ class Google implements ClientInterface
     }
 
     /**
-     * Google List of available code https://cloud.google.com/translate/docs/languages
+     * Google List of available code https://cloud.google.com/translate/docs/languages.
      */
     private const LANGUAGE_CODES = [
         'af', 'sq', 'am', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'bs', 'bg', 'ca', 'co', 'hr', 'ur', 'uz', 'ta', 'tg',
@@ -118,6 +124,6 @@ class Google implements ClientInterface
         'hi', 'hu', 'gd', 'sr', 'st', 'ro', 'ru', 'sm', 'pa', 'te', 'th', 'tr', 'uk', 'yi', 'yo', 'zu', 'xh', 'sw',
         'is', 'ig', 'id', 'ga', 'it', 'ja', 'jw', 'kn', 'kk', 'km', 'ko', 'ku', 'ky', 'lo', 'la', 'lv', 'lt', 'lb',
         'cy', 'mk', 'mg', 'ms', 'ml', 'mt', 'mi', 'mr', 'mn', 'my', 'ne', 'vi', 'sn', 'sd', 'si', 'sk', 'pl', 'pt',
-        'fa', 'no', 'ny', 'ps', 'sl', 'so', 'es', 'su', 'tl', 'ceb', 'zh-CN', 'zh-TW', 'hmn', 'haw'
+        'fa', 'no', 'ny', 'ps', 'sl', 'so', 'es', 'su', 'tl', 'ceb', 'zh-CN', 'zh-TW', 'hmn', 'haw',
     ];
 }

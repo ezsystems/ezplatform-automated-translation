@@ -5,7 +5,6 @@
  * @package   EzSystems\eZAutomatedTranslationBundle
  *
  * @author    Novactive <s.morel@novactive.com>
- *
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
  * @license   For full copyright and license information view LICENSE file distributed with this source code.
  */
@@ -14,7 +13,7 @@ declare(strict_types=1);
 namespace EzSystems\EzPlatformAutomatedTranslation\Client;
 
 /**
- * Interface ClientInterface
+ * Interface ClientInterface.
  */
 interface ClientInterface
 {
@@ -32,7 +31,7 @@ interface ClientInterface
      *
      * @return string
      */
-    public function translate(string $payload, string $from, string $to): string;
+    public function translate(string $payload, ?string $from, string $to): string;
 
     /**
      * @param string $languageCode
@@ -42,7 +41,16 @@ interface ClientInterface
     public function supportsLanguage(string $languageCode);
 
     /**
+     * Use as key.
+     *
      * @return string
      */
-    public function getServiceName(): string;
+    public function getServiceAlias(): string;
+
+    /**
+     * Use for Human.
+     *
+     * @return string
+     */
+    public function getServiceFullName(): string;
 }

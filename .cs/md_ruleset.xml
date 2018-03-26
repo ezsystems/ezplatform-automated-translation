@@ -16,7 +16,7 @@
     <rule ref="rulesets/naming.xml/ShortVariable">
         <priority>1</priority>
         <properties>
-            <property name="exceptions" value="em,id,fs,qb,i,mm,dd,yy,e,aa,io,dm,j,k,n,o"/>
+            <property name="exceptions" value="em,id,fs,qb,i,mm,dd,yy,e,aa,io,dm,j,k,n,o,to"/>
         </properties>
     </rule>
     <rule ref="rulesets/codesize.xml/CyclomaticComplexity">

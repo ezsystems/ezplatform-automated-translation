@@ -5,7 +5,6 @@
  * @package   EzSystems\eZAutomatedTranslationBundle
  *
  * @author    Novactive <s.morel@novactive.com>
- *
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
  * @license   For full copyright and license information view LICENSE file distributed with this source code.
  */
@@ -15,14 +14,10 @@ namespace EzSystems\EzPlatformAutomatedTranslation;
 
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
-use EzSystems\EzPlatformAdminUi\RepositoryForms\Data\ContentTranslationData;
-use EzSystems\EzPlatformAutomatedTranslation\Client\ClientInterface;
-use EzSystems\EzPlatformAutomatedTranslation\Client\Google;
 use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
-use EzSystems\RepositoryForms\Data\Content\FieldData;
 
 /**
- * Class Translator
+ * Class Translator.
  */
 class Translator
 {
@@ -68,14 +63,18 @@ class Translator
      *
      * @return Content
      */
-    public function getTranslatedFields(string $from, string $to, string $remoteServiceKey, Content $content): array
+    public function getTranslatedFields(?string $from, ?string $to, string $remoteServiceKey, Content $content): array
     {
-        $this->guard->enforceSourceLanguageVersionExist($content, $from);
+        $posixFrom = null;
+        if (null !== $from) {
+            $this->guard->enforceSourceLanguageVersionExist($content, $from);
+            $posixFrom = $this->localeConverter->convertToPOSIX($from);
+        }
         $this->guard->enforceTargetLanguageExist($to);
-        $sourceContent     = $this->guard->fetchContent($content, $from);
+
         $encoder           = new Encoder();
+        $sourceContent     = $this->guard->fetchContent($content, $from);
         $payload           = $encoder->encode($sourceContent->getFields());
-        $posixFrom         = $this->localeConverter->convertToPOSIX($from);
         $posixTo           = $this->localeConverter->convertToPOSIX($to);
         $remoteService     = $this->clientProvider->get($remoteServiceKey);
         $translatedPayload = $remoteService->translate($payload, $posixFrom, $posixTo);

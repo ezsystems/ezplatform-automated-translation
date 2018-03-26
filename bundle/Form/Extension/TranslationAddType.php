@@ -63,20 +63,20 @@ class TranslationAddType extends AbstractTypeExtension
                     'label'        => false,
                     'expanded'     => false,
                     'multiple'     => false,
-                    'choices'      => $this->clientProvider->getClients(),
+                    'choices'      => ['no-service' => 'no-service'] + $this->clientProvider->getClients(),
                     'choice_label' => function ($client) {
                         if ($client instanceof ClientInterface) {
-                            return ucfirst($client->getServiceName());
+                            return ucfirst($client->getServiceFullName());
                         }
 
-                        return null;
+                        return $client;
                     },
                     'choice_value' => function ($client) {
                         if ($client instanceof ClientInterface) {
-                            return $client->getServiceName();
+                            return $client->getServiceAlias();
                         }
 
-                        return null;
+                        return $client;
                     },
                 ]
             );

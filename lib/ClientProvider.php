@@ -5,7 +5,6 @@
  * @package   EzSystems\eZAutomatedTranslationBundle
  *
  * @author    Novactive <s.morel@novactive.com>
- *
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
  * @license   For full copyright and license information view LICENSE file distributed with this source code.
  */
@@ -17,11 +16,10 @@ use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use EzSystems\EzPlatformAutomatedTranslation\Client\ClientInterface;
 
 /**
- * Class ClientProvider
+ * Class ClientProvider.
  */
 class ClientProvider
 {
-
     /**
      * @var ClientInterface[]
      */
@@ -49,8 +47,9 @@ class ClientProvider
     /**
      * @param ClientInterface $client
      *
-     * @return ClientProvider
      * @throws \ReflectionException
+     *
+     * @return ClientProvider
      */
     private function addClient(ClientInterface $client): self
     {

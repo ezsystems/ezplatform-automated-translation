@@ -1,0 +1,23 @@
+language: php
+
+cache:
+  directories:
+  - $HOME/.composer/cache
+  - vendor
+
+php:
+  - 7.1
+  - 7.2
+
+before_install:
+  - phpenv config-rm xdebug.ini
+  - composer self-update
+
+install:
+  - travis_retry composer install --no-interaction
+  - composer info -i
+
+script:
+  - php vendor/bin/phpcs --standard=.cs/cs_ruleset.xml --extensions=php bundle/
+  - php vendor/bin/phpcs --standard=.cs/cs_ruleset.xml --extensions=php lib/
+  - php vendor/bin/phpcs --standard=.cs/cs_ruleset.xml --extensions=php tests/
