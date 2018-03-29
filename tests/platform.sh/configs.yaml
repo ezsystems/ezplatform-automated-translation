@@ -1,0 +1,6 @@
+ez_platform_automated_translation:
+    system:
+        default:
+            configurations:
+                google:
+                    apiKey: '%env(GOOGLE_TRANSLATE_API_KEY)%'

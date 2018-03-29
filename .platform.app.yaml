@@ -1,0 +1,46 @@
+# Install an eZ Platform
+name: app
+type: php:7.2
+build:
+    flavor: "none"
+
+relationships:
+    database: 'mysqldb:user'
+variables:
+    env:
+        SYMFONY_ENV: dev
+web:
+    locations:
+        "/":
+            root: "ezplatform/web"
+            passthru: "/app.php"
+            expires: 600
+disk: 2048
+mounts:
+    "/ezplatform/var/cache": "shared:files/cache"
+    "/ezplatform/var/logs": "shared:files/logs"
+    "/ezplatform/web/var": "shared:files/files"
+    "/ezplatform/var/sessions": "shared:files/sessions"
+hooks:
+    build: |
+        set -e
+        composer create-project ezsystems/ezplatform --prefer-dist --no-progress --no-interaction --no-scripts
+        curl -o tests/platform.sh/wrap.php https://raw.githubusercontent.com/Plopix/symfony-bundle-app-wrapper/master/wrap-bundle.php
+        WRAP_APP_DIR=./ezplatform php tests/platform.sh/wrap.php
+        cd ezplatform
+        composer update --lock
+    deploy: |
+        set -e
+        cd ezplatform
+        bin/console ezplatform:install clean
+        mv var/cache/$SYMFONY_ENV var/cache/oldcache
+        bin/console cache:clear
+    post_deploy: |
+        set -e
+        rm -rf ezplatform/var/cache/oldcache
+
+runtime:
+    extensions:
+        - xsl
+        - imagick
+        - readline
