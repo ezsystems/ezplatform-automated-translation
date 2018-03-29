@@ -4,3 +4,7 @@ ez_platform_automated_translation:
             configurations:
                 google:
                     apiKey: '%env(GOOGLE_TRANSLATE_API_KEY)%'
+
+
+parameters:
+    env(GOOGLE_TRANSLATE_API_KEY): 'tbd'
