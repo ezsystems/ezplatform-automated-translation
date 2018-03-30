@@ -4,7 +4,7 @@
 
 A command can Translate a Content for you
 
-`php bin/console eztranslate [contnentId] [serviceName] --from=eng-GB --to=fre-FR`
+`php bin/console eztranslate [contentId] [serviceName] --from=eng-GB --to=fre-FR`
 
 
 ## Adding your own Remote Translation Service
