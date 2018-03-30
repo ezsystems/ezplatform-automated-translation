@@ -47,8 +47,8 @@ class TranslationController extends BaseTranslationController
                 )
             )
         );
-        $serviceAlias = $request->request->get('add-translation')['translatorAlias'];
-        if (1 !== preg_match("#{$pattern}#", $targetUrl)) {
+        $serviceAlias = $request->request->get('add-translation')['translatorAlias'] ?? '';
+        if (1 !== preg_match("#{$pattern}#", $targetUrl) || '' === $serviceAlias) {
             return $response;
         }
         $response->setTargetUrl(sprintf('%s?translatorAlias=%s', $targetUrl, $serviceAlias));

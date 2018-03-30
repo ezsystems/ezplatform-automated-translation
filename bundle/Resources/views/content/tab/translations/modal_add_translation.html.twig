@@ -17,8 +17,7 @@
                 <span class="ez-translation__title">{{ 'tab.translations.add.base_language'|trans|desc('Base this translation on an existing translation') }}</span>
                 {{ form_widget(form.base_language, {'attr': {'class': 'ez-translation__language-wrapper'}}) }}
 
-                <span class="ez-translation__title">{{ 'tab.translations.remote.translation.service'|trans|desc('Translate with a remote service') }}</span>
-                {{ form_widget(form.translatorAlias, {'attr': {'class': 'ez-translation__language-wrapper'}}) }}
+                {% include '@EzPlatformAutomatedTranslation/content/tab/translations/remote_translate_form_fields.html.twig' %}
 
                 <div>
                 </div>

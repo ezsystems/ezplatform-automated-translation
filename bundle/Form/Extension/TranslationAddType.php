@@ -18,6 +18,7 @@ use EzSystems\EzPlatformAutomatedTranslation\ClientProvider;
 use EzSystems\EzPlatformAutomatedTranslationBundle\Form\Data\TranslationAddData;
 use EzSystems\EzPlatformAutomatedTranslationBundle\Form\TranslationAddDataTransformer;
 use Symfony\Component\Form\AbstractTypeExtension;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -55,6 +56,30 @@ class TranslationAddType extends AbstractTypeExtension
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $clients      = $this->clientProvider->getClients();
+        $clientsCount = count($clients);
+
+        if ($clientsCount <= 0) {
+            return;
+        }
+        if (1 === $clientsCount) {
+            $client = array_pop($clients);
+            $builder
+                ->add(
+                    'translatorAlias',
+                    CheckboxType::class,
+                    [
+                        'label'    => $client->getServiceFullName(),
+                        'value'    => $client->getServiceAlias(),
+                        'data'     => true,
+                        'required' => false,
+                    ]
+                );
+            $builder->addModelTransformer(new TranslationAddDataTransformer());
+
+            return;
+        }
+
         $builder
             ->add(
                 'translatorAlias',
@@ -63,7 +88,8 @@ class TranslationAddType extends AbstractTypeExtension
                     'label'        => false,
                     'expanded'     => false,
                     'multiple'     => false,
-                    'choices'      => ['no-service' => 'no-service'] + $this->clientProvider->getClients(),
+                    'required'     => false,
+                    'choices'      => ['' => 'no-service'] + $this->clientProvider->getClients(),
                     'choice_label' => function ($client) {
                         if ($client instanceof ClientInterface) {
                             return ucfirst($client->getServiceFullName());
@@ -76,7 +102,7 @@ class TranslationAddType extends AbstractTypeExtension
                             return $client->getServiceAlias();
                         }
 
-                        return $client;
+                        return '';
                     },
                 ]
             );

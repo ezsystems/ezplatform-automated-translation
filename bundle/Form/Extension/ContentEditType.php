@@ -84,14 +84,15 @@ class ContentEditType extends AbstractTypeExtension
                 if (null === $request) {
                     return;
                 }
+                if (!$request->query->has('translatorAlias')) {
+                    return;
+                }
                 $fromLanguageCode = $request->attributes->get('fromLanguageCode') ?? null;
                 $toLanguageCode   = $request->attributes->get('toLanguageCode') ?? null;
-                $serviceAlias     = $request->query->get('translatorAlias');
-
                 $translatedFields = $this->translator->getTranslatedFields(
                     $fromLanguageCode,
                     $toLanguageCode,
-                    $serviceAlias,
+                    $request->query->get('translatorAlias'),
                     $data->content
                 );
                 $contentType      = $this->contentTypeService->loadContentType(

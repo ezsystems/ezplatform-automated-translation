@@ -8,7 +8,7 @@ relationships:
     database: 'mysqldb:user'
 variables:
     env:
-        SYMFONY_ENV: dev
+        SYMFONY_ENV: prod
 web:
     locations:
         "/":
