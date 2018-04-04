@@ -39,20 +39,28 @@ class Translator
     private $clientProvider;
 
     /**
+     * @var Encoder
+     */
+    private $encoder;
+
+    /**
      * Translator constructor.
      *
      * @param TranslatorGuard          $guard
      * @param LocaleConverterInterface $localeConverter
      * @param ClientProvider           $clientProvider
+     * @param Encoder                  $encoder
      */
     public function __construct(
         TranslatorGuard $guard,
         LocaleConverterInterface $localeConverter,
-        ClientProvider $clientProvider
+        ClientProvider $clientProvider,
+        Encoder $encoder
     ) {
         $this->guard           = $guard;
         $this->localeConverter = $localeConverter;
         $this->clientProvider  = $clientProvider;
+        $this->encoder         = $encoder;
     }
 
     /**
@@ -72,14 +80,13 @@ class Translator
         }
         $this->guard->enforceTargetLanguageExist($to);
 
-        $encoder           = new Encoder();
         $sourceContent     = $this->guard->fetchContent($content, $from);
-        $payload           = $encoder->encode($sourceContent->getFields());
+        $payload           = $this->encoder->encode($sourceContent);
         $posixTo           = $this->localeConverter->convertToPOSIX($to);
         $remoteService     = $this->clientProvider->get($remoteServiceKey);
         $translatedPayload = $remoteService->translate($payload, $posixFrom, $posixTo);
 
-        return $encoder->decode($translatedPayload);
+        return $this->encoder->decode($translatedPayload);
     }
 
     /**

@@ -28,7 +28,10 @@ class Configuration extends SiteAccessAware\Configuration
         $treeBuilder = new TreeBuilder();
         $rootNode    = $treeBuilder->root('ez_platform_automated_translation');
         $systemNode  = $this->generateScopeBaseNode($rootNode);
-        $systemNode->variableNode('configurations')->end();
+        $systemNode
+            ->variableNode('configurations')->end()
+            ->arrayNode('nontranslatablecharacters')->end()
+            ->arrayNode('nontranslatabletags')->end();
 
         return $treeBuilder;
     }

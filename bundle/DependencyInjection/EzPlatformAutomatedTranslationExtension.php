@@ -43,5 +43,7 @@ class EzPlatformAutomatedTranslationExtension extends Extension
 
         $processor = new ConfigurationProcessor($container, $this->getAlias());
         $processor->mapSetting('configurations', $config);
+        $processor->mapSetting('nontranslatablecharacters', $config);
+        $processor->mapSetting('nontranslatabletags', $config);
     }
 }

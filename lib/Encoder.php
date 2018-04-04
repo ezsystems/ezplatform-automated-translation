@@ -12,7 +12,9 @@ declare(strict_types=1);
 
 namespace EzSystems\EzPlatformAutomatedTranslation;
 
-use eZ\Publish\API\Repository\Values\Content\Field;
+use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\ConfigResolver;
+use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\Core\FieldType\RichText\Value as RichTextValue;
 use eZ\Publish\Core\FieldType\TextLine\Value as TextLineValue;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
@@ -69,16 +71,68 @@ class Encoder
     private const XML_MARKUP = '<?xml version="1.0" encoding="UTF-8"?>';
 
     /**
-     * @param Field[] $fields
+     * Allow to replace characters preserve eZ RichText Content.
+     *
+     * @var array
+     */
+    private $nonTranslatableCharactersHashMap;
+
+    /**
+     * Everything inside these tags must be preserve from translation.
+     *
+     * @var array
+     */
+    private $nonTranslatableTags;
+
+    /**
+     * @var ContentTypeService
+     */
+    private $contentTypeService;
+
+    /**
+     * @var array
+     */
+    private $placeHolderMap;
+
+    /**
+     * Encoder constructor.
+     *
+     * @param ContentTypeService $contentTypeService
+     * @param ConfigResolver     $configResolver
+     */
+    public function __construct(ContentTypeService $contentTypeService, ConfigResolver $configResolver)
+    {
+        $this->contentTypeService = $contentTypeService;
+        $this->placeHolderMap     = [];
+        $tags                     = $configResolver->getParameter(
+            'nontranslatabletags',
+            'ez_platform_automated_translation'
+        );
+        $chars                    = $configResolver->getParameter(
+            'nontranslatablecharacters',
+            'ez_platform_automated_translation'
+        );
+
+        $this->nonTranslatableTags              = ['ezembed'] + $tags;
+        $this->nonTranslatableCharactersHashMap = ["\n" => 'XXXEOLXXX'] + $chars;
+    }
+
+    /**
+     * @param Content $content
      *
      * @return string
      */
-    public function encode(array $fields): string
+    public function encode(Content $content): string
     {
-        $results = [];
-        foreach ($fields as $field) {
-            $identifier = $field->fieldDefIdentifier;
-            $type       = \get_class($field->value);
+        $results     = [];
+        $contentType = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId);
+        foreach ($content->getFields() as $field) {
+            $identifier      = $field->fieldDefIdentifier;
+            $fieldDefinition = $contentType->getFieldDefinition($identifier);
+            if (!$fieldDefinition->isTranslatable) {
+                continue;
+            }
+            $type = \get_class($field->value);
             // Note that TextBlock is a TextLine
             if ($field->value instanceof TextLineValue) {
                 $value                = (string) $field->value;
@@ -87,7 +141,7 @@ class Encoder
             }
             if ($field->value instanceof RichTextValue) {
                 // we need to remove that to make it a good XML
-                $value                = substr((string) $field->value, \strlen(self::XML_MARKUP));
+                $value                = $this->richTextEncode($field->value);
                 $results[$identifier] = ['#' => $value, '@type' => $type];
             }
         }
@@ -119,8 +173,11 @@ class Encoder
         $decodeArray = $encoder->decode($data, XmlEncoder::FORMAT);
         $results     = [];
         foreach ($decodeArray as $fieldIdentifier => $xmlValue) {
-            $type         = $xmlValue['@type'];
-            $value        = $xmlValue['#'];
+            $type  = $xmlValue['@type'];
+            $value = $xmlValue['#'];
+            if (RichTextValue::class === $type) {
+                $value = $this->richTextDecode($value);
+            }
             $trimmedValue = trim($value);
             if ('' === $trimmedValue) {
                 continue;
@@ -129,5 +186,60 @@ class Encoder
         }
 
         return $results;
+    }
+
+    /**
+     * @param RichTextValue $value
+     *
+     * @return string
+     */
+    public function richTextEncode(RichTextValue $value): string
+    {
+        $xmlString = substr((string) $value, \strlen(self::XML_MARKUP));
+        $xmlString = str_replace(
+            array_keys($this->nonTranslatableCharactersHashMap),
+            array_values($this->nonTranslatableCharactersHashMap),
+            $xmlString
+        );
+
+        foreach ($this->nonTranslatableTags as $tag) {
+            $xmlString = preg_replace_callback(
+                '#<' . $tag . '(.[^>]*)>(.*)</' . $tag . '>#uim',
+                function ($matches) use ($tag) {
+                    $hash                        = sha1($matches[0]);
+                    $this->placeHolderMap[$hash] = $matches[0];
+
+                    return "<{$tag}>{$hash}</{$tag}>";
+                },
+                $xmlString
+            );
+        }
+
+        return $xmlString;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return string
+     */
+    public function richTextDecode(string $value): string
+    {
+        $value = str_replace(
+            array_values($this->nonTranslatableCharactersHashMap),
+            array_keys($this->nonTranslatableCharactersHashMap),
+            $value
+        );
+        foreach ($this->nonTranslatableTags as $tag) {
+            $value = preg_replace_callback(
+                '#<' . $tag . '>(.*)</' . $tag . '>#uim',
+                function ($matches) {
+                    return $this->placeHolderMap[trim($matches[1])];
+                },
+                $value
+            );
+        }
+
+        return $value;
     }
 }
