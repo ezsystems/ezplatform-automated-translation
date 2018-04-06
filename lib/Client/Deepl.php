@@ -11,6 +11,7 @@
 declare(strict_types=1);
 
 namespace EzSystems\EzPlatformAutomatedTranslation\Client;
+
 use EzSystems\EzPlatformAutomatedTranslation\Exception\ClientNotConfiguredException;
 use EzSystems\EzPlatformAutomatedTranslation\Exception\InvalidLanguageCodeException;
 use GuzzleHttp\Client;
@@ -20,6 +21,9 @@ use GuzzleHttp\Client;
  */
 class Deepl implements ClientInterface
 {
+    /**
+     * @var string
+     */
     private $authKey;
 
     /**
@@ -67,7 +71,7 @@ class Deepl implements ClientInterface
             ];
         }
 
-        $http = new Client(
+        $http     = new Client(
             [
                 'base_uri' => 'https://api.deepl.com',
                 'timeout'  => 5.0,
@@ -85,17 +89,20 @@ class Deepl implements ClientInterface
      */
     public function supportsLanguage(string $languageCode)
     {
-        return in_array($this->normalized($languageCode), self::LANGUAGE_CODES);
+        return \in_array($this->normalized($languageCode), self::LANGUAGE_CODES);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     private function normalized(string $languageCode): string
     {
-        if (in_array($languageCode, self::LANGUAGE_CODES)) {
+        if (\in_array($languageCode, self::LANGUAGE_CODES)) {
             return $languageCode;
         }
 
         $code = strtoupper(substr($languageCode, 0, 2));
-        if (in_array($code, self::LANGUAGE_CODES)) {
+        if (\in_array($code, self::LANGUAGE_CODES)) {
             return $code;
         }
 
@@ -105,5 +112,5 @@ class Deepl implements ClientInterface
     /**
      * Google List of available code https://www.deepl.com/api.html.
      */
-    private const LANGUAGE_CODES = ["EN", "DE", "FR", "ES", "IT", "NL", "PL"];
+    private const LANGUAGE_CODES = ['EN', 'DE', 'FR', 'ES', 'IT', 'NL', 'PL'];
 }

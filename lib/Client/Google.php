@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace EzSystems\EzPlatformAutomatedTranslation\Client;
 
+use EzSystems\EzPlatformAutomatedTranslation\Exception\ClientNotConfiguredException;
+use EzSystems\EzPlatformAutomatedTranslation\Exception\InvalidLanguageCodeException;
 use GuzzleHttp\Client;
 
 /**
@@ -46,9 +48,7 @@ class Google implements ClientInterface
     public function setConfiguration(array $configuration): void
     {
         if (!isset($configuration['apiKey'])) {
-            throw new \RuntimeException(
-                'Remote Translation service ' . self::class . ' cannot autoconfigured without apiKey'
-            );
+            throw new ClientNotConfiguredException('authKey is required');
         }
         $this->apiKey = $configuration['apiKey'];
     }
@@ -111,8 +111,7 @@ class Google implements ClientInterface
         if ('zh_TW' === $languageCode) {
             return 'zh-TW';
         }
-
-        return $languageCode;
+        throw new InvalidLanguageCodeException($languageCode, $this->getServiceAlias());
     }
 
     /**

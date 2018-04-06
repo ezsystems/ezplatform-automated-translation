@@ -12,7 +12,8 @@ ez_platform_automated_translation:
         default:
             configurations:
                 google:
-                    apiKey: "xxx"
-                    
+                    apiKey: "google-api-key"
+                deepl:
+                    authKey: "deepl-pro-key"
 ```
 
