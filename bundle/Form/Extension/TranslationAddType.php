@@ -12,15 +12,18 @@ declare(strict_types=1);
 
 namespace EzSystems\EzPlatformAutomatedTranslationBundle\Form\Extension;
 
+use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
 use EzSystems\EzPlatformAdminUi\Form\Type\Content\Translation\TranslationAddType as BaseTranslationAddType;
 use EzSystems\EzPlatformAutomatedTranslation\Client\ClientInterface;
 use EzSystems\EzPlatformAutomatedTranslation\ClientProvider;
-use EzSystems\EzPlatformAutomatedTranslationBundle\Form\Data\TranslationAddData;
 use EzSystems\EzPlatformAutomatedTranslationBundle\Form\TranslationAddDataTransformer;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -34,13 +37,20 @@ class TranslationAddType extends AbstractTypeExtension
     private $clientProvider;
 
     /**
+     * @var LocaleConverterInterface
+     */
+    private $localeConverter;
+
+    /**
      * TranslationAddType constructor.
      *
-     * @param ClientProvider $clientProvider
+     * @param ClientProvider           $clientProvider
+     * @param LocaleConverterInterface $localeConverter
      */
-    public function __construct(ClientProvider $clientProvider)
+    public function __construct(ClientProvider $clientProvider, LocaleConverterInterface $localeConverter)
     {
-        $this->clientProvider = $clientProvider;
+        $this->clientProvider  = $clientProvider;
+        $this->localeConverter = $localeConverter;
     }
 
     /**
@@ -112,11 +122,44 @@ class TranslationAddType extends AbstractTypeExtension
     /**
      * {@inheritdoc}
      */
+    public function buildView(FormView $view, FormInterface $form, array $options): void
+    {
+        // let's pass to the template/form the possible language
+        $map = [];
+
+        $fillMap = function ($key, &$map) use ($form) {
+            $languages = $form->get($key);
+            foreach ($languages as $language) {
+                /** @var Form $language */
+                /** @var FormBuilderInterface $config */
+                $config = $language->getConfig();
+                $lang   = $config->getOption('value');
+                foreach ($this->clientProvider->getClients() as $client) {
+                    $posix = $this->localeConverter->convertToPOSIX($lang);
+                    if (null === $posix) {
+                        continue;
+                    }
+                    if ($client->supportsLanguage($posix)) {
+                        $map[$client->getServiceAlias()][] = $lang;
+                    }
+                }
+            }
+        };
+
+        $fillMap('language', $map);
+        $fillMap('base_language', $map);
+
+        $view->vars['autotranslated_data'] = $map;
+        parent::buildView($view, $form, $options);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(
             [
-                'data_class' => TranslationAddData::class,
             ]
         );
     }
