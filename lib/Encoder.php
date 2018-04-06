@@ -85,6 +85,13 @@ class Encoder
     private $nonTranslatableTags;
 
     /**
+     * Every attributes inside these tags must be preserve from translation.
+     *
+     * @var array
+     */
+    private $nonValidAttributeTags;
+
+    /**
      * @var ContentTypeService
      */
     private $contentTypeService;
@@ -113,8 +120,14 @@ class Encoder
             'ez_platform_automated_translation'
         );
 
+        $attributes = $configResolver->getParameter(
+            'nonnalidattributetags',
+            'ez_platform_automated_translation'
+        );
+
         $this->nonTranslatableTags              = ['ezembed'] + $tags;
         $this->nonTranslatableCharactersHashMap = ["\n" => 'XXXEOLXXX'] + $chars;
+        $this->nonValidAttributeTags            = ['title'] + $attributes;
     }
 
     /**
@@ -214,6 +227,19 @@ class Encoder
                 $xmlString
             );
         }
+        foreach ($this->nonValidAttributeTags as $tag) {
+            $xmlString = preg_replace_callback(
+                '#<' . $tag . '(.[^>]*)>#uim',
+                function ($matches) use ($tag) {
+                    $hash                        = sha1($matches[0]);
+                    $this->placeHolderMap[$hash] = $matches[0];
+
+                    return "<fake{$tag} {$hash}>";
+                },
+                $xmlString
+            );
+            $xmlString = str_replace("</{$tag}>", "</fake{$tag}>", $xmlString);
+        }
 
         return $xmlString;
     }
@@ -238,6 +264,16 @@ class Encoder
                 },
                 $value
             );
+        }
+        foreach ($this->nonValidAttributeTags as $tag) {
+            $value = preg_replace_callback(
+                '#<fake' . $tag . '(.[^>]*)>#uim',
+                function ($matches) {
+                    return $this->placeHolderMap[trim($matches[1])];
+                },
+                $value
+            );
+            $value = str_replace("</fake{$tag}>", "</{$tag}>", $value);
         }
 
         return $value;
