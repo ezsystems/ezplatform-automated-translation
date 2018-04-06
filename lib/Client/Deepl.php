@@ -11,12 +11,17 @@
 declare(strict_types=1);
 
 namespace EzSystems\EzPlatformAutomatedTranslation\Client;
+use EzSystems\EzPlatformAutomatedTranslation\Exception\ClientNotConfiguredException;
+use EzSystems\EzPlatformAutomatedTranslation\Exception\InvalidLanguageCodeException;
+use GuzzleHttp\Client;
 
 /**
  * Class Deepl.
  */
 class Deepl implements ClientInterface
 {
+    private $authKey;
+
     /**
      * {@inheritdoc}
      */
@@ -38,6 +43,10 @@ class Deepl implements ClientInterface
      */
     public function setConfiguration(array $configuration): void
     {
+        if (!isset($configuration['authKey'])) {
+            throw new ClientNotConfiguredException('authKey is required');
+        }
+        $this->authKey = $configuration['authKey'];
     }
 
     /**
@@ -45,7 +54,30 @@ class Deepl implements ClientInterface
      */
     public function translate(string $payload, ?string $from, string $to): string
     {
-        return '';
+        $parameters = [
+            'auth_key'     => $this->authKey,
+            'target_lang'  => $this->normalized($to),
+            'tag_handling' => 'xml',
+            'text'         => $payload,
+        ];
+
+        if (null !== $from) {
+            $parameters += [
+                'source_lang' => $this->normalized($from),
+            ];
+        }
+
+        $http = new Client(
+            [
+                'base_uri' => 'https://api.deepl.com',
+                'timeout'  => 5.0,
+            ]
+        );
+        $response = $http->post('/v1/translate', ['form_params' => $parameters]);
+        // May use the native json method from guzzle
+        $json = json_decode($response->getBody()->getContents());
+
+        return $json->translations[0]->text;
     }
 
     /**
@@ -53,6 +85,25 @@ class Deepl implements ClientInterface
      */
     public function supportsLanguage(string $languageCode)
     {
-        return false;
+        return in_array($this->normalized($languageCode), self::LANGUAGE_CODES);
     }
+
+    private function normalized(string $languageCode): string
+    {
+        if (in_array($languageCode, self::LANGUAGE_CODES)) {
+            return $languageCode;
+        }
+
+        $code = strtoupper(substr($languageCode, 0, 2));
+        if (in_array($code, self::LANGUAGE_CODES)) {
+            return $code;
+        }
+
+        throw new InvalidLanguageCodeException($languageCode, $this->getServiceAlias());
+    }
+
+    /**
+     * Google List of available code https://www.deepl.com/api.html.
+     */
+    private const LANGUAGE_CODES = ["EN", "DE", "FR", "ES", "IT", "NL", "PL"];
 }
