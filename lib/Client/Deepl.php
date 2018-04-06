@@ -110,7 +110,7 @@ class Deepl implements ClientInterface
     }
 
     /**
-     * Google List of available code https://www.deepl.com/api.html.
+     * List of available code https://www.deepl.com/api.html.
      */
     private const LANGUAGE_CODES = ['EN', 'DE', 'FR', 'ES', 'IT', 'NL', 'PL'];
 }
