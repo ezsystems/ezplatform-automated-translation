@@ -35,6 +35,8 @@ class LanguageCreateType extends AbstractTypeExtension
     public function __construct(array $localeList)
     {
         $this->localeList = array_keys($localeList);
+        // To Be Remove for PROD ready plugin
+        $this->localeList['klingon'] = 'klingon';
     }
 
     /**
