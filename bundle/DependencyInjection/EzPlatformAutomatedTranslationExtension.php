@@ -31,15 +31,21 @@ class EzPlatformAutomatedTranslationExtension extends Extension
         $configuration = new Configuration();
         $config        = $this->processConfiguration($configuration, $configs);
 
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        // always needed because of Bundle extension.
+        $loader->load('services_override.yml');
+
+        if (empty($config['system'])) {
+            return;
+        }
+
         $asseticBundles   = $container->getParameter('assetic.bundles');
         $asseticBundles[] = 'EzPlatformAutomatedTranslationBundle';
         $container->setParameter('assetic.bundles', $asseticBundles);
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('ezadminui.yml');
         $loader->load('default_settings.yml');
         $loader->load('services.yml');
-        $loader->load('services_override.yml');
 
         $processor = new ConfigurationProcessor($container, $this->getAlias());
         $processor->mapSetting('configurations', $config);
