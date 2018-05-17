@@ -158,6 +158,7 @@ class Encoder
                 $results[$identifier] = ['#' => $value, '@type' => $type];
             }
         }
+
         $encoder = new XmlEncoder();
         $payload = $encoder->encode($results, XmlEncoder::FORMAT);
         // here Encoder has  decorated with CDATA, we don't want the CDATA
@@ -208,7 +209,8 @@ class Encoder
      */
     public function richTextEncode(RichTextValue $value): string
     {
-        $xmlString = substr((string) $value, \strlen(self::XML_MARKUP));
+        $xmlString = (string) $value;
+        $xmlString = substr($xmlString, strpos($xmlString, '>') + 1);
         $xmlString = str_replace(
             array_keys($this->nonTranslatableCharactersHashMap),
             array_values($this->nonTranslatableCharactersHashMap),
