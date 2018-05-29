@@ -39,6 +39,10 @@ class EzPlatformAutomatedTranslationExtension extends Extension
             return;
         }
 
+        if (!$this->hasConfiguredClients($config, $container)) {
+            return;
+        }
+
         $asseticBundles   = $container->getParameter('assetic.bundles');
         $asseticBundles[] = 'EzPlatformAutomatedTranslationBundle';
         $container->setParameter('assetic.bundles', $asseticBundles);
@@ -52,5 +56,16 @@ class EzPlatformAutomatedTranslationExtension extends Extension
         $processor->mapSetting('nontranslatablecharacters', $config);
         $processor->mapSetting('nontranslatabletags', $config);
         $processor->mapSetting('nonnalidattributetags', $config);
+    }
+
+    private function hasConfiguredClients(array $config, ContainerBuilder $container): bool
+    {
+        return 0 !== count(array_filter($config['system'], function ($value) use ($container) {
+            return array_filter($value['configurations'], function ($value) use ($container) {
+                $value = is_array($value) ? reset($value) : $value;
+
+                return !empty($container->resolveEnvPlaceholders($value, true));
+            });
+        }));
     }
 }
