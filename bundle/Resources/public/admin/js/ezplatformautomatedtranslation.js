@@ -1,4 +1,5 @@
-$(function () {
+jQuery(function () {
+    let $ = jQuery;
     let $form = $("form[name=add-translation]", "#add-translation-modal");
     let $container = $(".ezautomatedtranslation-services-container:first", $form);
     let $error = $(".ezautomatedtranslation-error", $container);
