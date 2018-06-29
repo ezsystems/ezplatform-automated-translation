@@ -74,7 +74,7 @@ class Google implements ClientInterface
         $http     = new Client(
             [
                 'base_uri' => 'https://translation.googleapis.com/',
-                'timeout'  => 2.0,
+                'timeout'  => 10.0,
             ]
         );
         $response = $http->post('/language/translate/v2', ['form_params' => $parameters]);
