@@ -207,7 +207,7 @@ class Encoder
      *
      * @return string
      */
-    public function richTextEncode(RichTextValue $value): string
+    private function richTextEncode(RichTextValue $value): string
     {
         $xmlString = (string) $value;
         $xmlString = substr($xmlString, strpos($xmlString, '>') + 1);
@@ -219,7 +219,7 @@ class Encoder
 
         foreach ($this->nonTranslatableTags as $tag) {
             $xmlString = preg_replace_callback(
-                '#<' . $tag . '(.[^>]*)>(.*)</' . $tag . '>#uim',
+                '#<' . $tag . '(.[^>]*)>(.*)</' . $tag . '>#Uuim',
                 function ($matches) use ($tag) {
                     $hash                        = sha1($matches[0]);
                     $this->placeHolderMap[$hash] = $matches[0];
@@ -231,7 +231,7 @@ class Encoder
         }
         foreach ($this->nonValidAttributeTags as $tag) {
             $xmlString = preg_replace_callback(
-                '#<' . $tag . '(.[^>]*)>#uim',
+                '#<' . $tag . '(.[^>]*)>#Uuim',
                 function ($matches) use ($tag) {
                     $hash                        = sha1($matches[0]);
                     $this->placeHolderMap[$hash] = $matches[0];
@@ -251,7 +251,7 @@ class Encoder
      *
      * @return string
      */
-    public function richTextDecode(string $value): string
+    private function richTextDecode(string $value): string
     {
         $value = str_replace(
             array_values($this->nonTranslatableCharactersHashMap),
@@ -260,7 +260,7 @@ class Encoder
         );
         foreach ($this->nonTranslatableTags as $tag) {
             $value = preg_replace_callback(
-                '#<' . $tag . '>(.*)</' . $tag . '>#uim',
+                '#<' . $tag . '>(.*)</' . $tag . '>#Uuim',
                 function ($matches) {
                     return $this->placeHolderMap[trim($matches[1])];
                 },
@@ -269,7 +269,7 @@ class Encoder
         }
         foreach ($this->nonValidAttributeTags as $tag) {
             $value = preg_replace_callback(
-                '#<fake' . $tag . '(.[^>]*)>#uim',
+                '#<fake' . $tag . '(.[^>]*)>#Uuim',
                 function ($matches) {
                     return $this->placeHolderMap[trim($matches[1])];
                 },

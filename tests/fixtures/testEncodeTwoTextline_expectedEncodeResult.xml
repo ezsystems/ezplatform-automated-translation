@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<response><field_1_textline type="eZ\Publish\Core\FieldType\TextLine\Value">Some text 1</field_1_textline><field_2_textline type="eZ\Publish\Core\FieldType\TextLine\Value">Some text 2</field_2_textline></response>
