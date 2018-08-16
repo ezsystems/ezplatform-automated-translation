@@ -125,7 +125,7 @@ class Encoder
             'ez_platform_automated_translation'
         );
 
-        $this->nonTranslatableTags              = ['ezembed'] + $tags;
+        $this->nonTranslatableTags              = ['ezvalue', 'ezconfig', 'ezembed'] + $tags;
         $this->nonTranslatableCharactersHashMap = ["\n" => 'XXXEOLXXX'] + $chars;
         $this->nonValidAttributeTags            = ['title'] + $attributes;
     }
@@ -207,19 +207,14 @@ class Encoder
      *
      * @return string
      */
-    public function richTextEncode(RichTextValue $value): string
+    private function richTextEncode(RichTextValue $value): string
     {
         $xmlString = (string) $value;
         $xmlString = substr($xmlString, strpos($xmlString, '>') + 1);
-        $xmlString = str_replace(
-            array_keys($this->nonTranslatableCharactersHashMap),
-            array_values($this->nonTranslatableCharactersHashMap),
-            $xmlString
-        );
-
+        $xmlString = $this->encodeNonTranslatableCharacters($xmlString);
         foreach ($this->nonTranslatableTags as $tag) {
             $xmlString = preg_replace_callback(
-                '#<' . $tag . '(.[^>]*)>(.*)</' . $tag . '>#uim',
+                '#<' . $tag . '(.[^>]*)>(.*)</' . $tag . '>#Uuim',
                 function ($matches) use ($tag) {
                     $hash                        = sha1($matches[0]);
                     $this->placeHolderMap[$hash] = $matches[0];
@@ -231,7 +226,7 @@ class Encoder
         }
         foreach ($this->nonValidAttributeTags as $tag) {
             $xmlString = preg_replace_callback(
-                '#<' . $tag . '(.[^>]*)>#uim',
+                '#<' . $tag . '(.[^>]*)>#Uuim',
                 function ($matches) use ($tag) {
                     $hash                        = sha1($matches[0]);
                     $this->placeHolderMap[$hash] = $matches[0];
@@ -251,16 +246,12 @@ class Encoder
      *
      * @return string
      */
-    public function richTextDecode(string $value): string
+    private function richTextDecode(string $value): string
     {
-        $value = str_replace(
-            array_values($this->nonTranslatableCharactersHashMap),
-            array_keys($this->nonTranslatableCharactersHashMap),
-            $value
-        );
-        foreach ($this->nonTranslatableTags as $tag) {
+        $value = $this->decodeNonTranslatableCharacters($value);
+        foreach (array_reverse($this->nonTranslatableTags) as $tag) {
             $value = preg_replace_callback(
-                '#<' . $tag . '>(.*)</' . $tag . '>#uim',
+                '#<' . $tag . '>(.*)</' . $tag . '>#Uuim',
                 function ($matches) {
                     return $this->placeHolderMap[trim($matches[1])];
                 },
@@ -269,7 +260,7 @@ class Encoder
         }
         foreach ($this->nonValidAttributeTags as $tag) {
             $value = preg_replace_callback(
-                '#<fake' . $tag . '(.[^>]*)>#uim',
+                '#<fake' . $tag . '(.[^>]*)>#Uuim',
                 function ($matches) {
                     return $this->placeHolderMap[trim($matches[1])];
                 },
@@ -277,7 +268,36 @@ class Encoder
             );
             $value = str_replace("</fake{$tag}>", "</{$tag}>", $value);
         }
+        $value = $this->decodeNonTranslatableCharacters($value);
 
         return $value;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return string
+     */
+    private function encodeNonTranslatableCharacters(string $value): string
+    {
+        return str_replace(
+            array_keys($this->nonTranslatableCharactersHashMap),
+            array_values($this->nonTranslatableCharactersHashMap),
+            $value
+        );
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return string
+     */
+    private function decodeNonTranslatableCharacters(string $value): string
+    {
+        return str_replace(
+            array_values($this->nonTranslatableCharactersHashMap),
+            array_keys($this->nonTranslatableCharactersHashMap),
+            $value
+        );
     }
 }
