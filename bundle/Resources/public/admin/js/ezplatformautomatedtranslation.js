@@ -30,6 +30,11 @@ jQuery(function () {
         if ($serviceSelector.is("[type=checkbox]") && !$serviceSelector.is(":checked")) {
             serviceAlias = '';
         }
+
+        if (!serviceAlias.length) {
+            return true;
+        }
+
         let translationAvailable = (typeof sourceLang === 'undefined' || -1 !== $.inArray(sourceLang, mapping[serviceAlias])) && (-1 !== $.inArray(targetLang, mapping[serviceAlias]));
         if (false === translationAvailable) {
             $error.removeClass("invisible");
