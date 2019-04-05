@@ -17,6 +17,7 @@ use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\Core\FieldType\RichText\Value as RichTextValue;
 use eZ\Publish\Core\FieldType\TextLine\Value as TextLineValue;
+use EzSystems\EzPlatformRichText\eZ\FieldType\RichText\Value as EzPlatformRichTextValue;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 
 /**
@@ -152,7 +153,9 @@ class Encoder
                 $results[$identifier] = ['#' => $value, '@type' => $type];
                 continue;
             }
-            if ($field->value instanceof RichTextValue) {
+            if ($field->value instanceof RichTextValue
+                || $field->value instanceof EzPlatformRichTextValue
+            ) {
                 // we need to remove that to make it a good XML
                 $value                = $this->richTextEncode($field->value);
                 $results[$identifier] = ['#' => $value, '@type' => $type];
@@ -189,7 +192,10 @@ class Encoder
         foreach ($decodeArray as $fieldIdentifier => $xmlValue) {
             $type  = $xmlValue['@type'];
             $value = $xmlValue['#'];
-            if (RichTextValue::class === $type) {
+
+            if (RichTextValue::class === $type
+                || EzPlatformRichTextValue::class === $type
+            ) {
                 $value = $this->richTextDecode($value);
             }
             $trimmedValue = trim($value);
