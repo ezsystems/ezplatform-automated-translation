@@ -23,7 +23,7 @@
     "require": {
         "php": "^7.1",
         "guzzlehttp/guzzle": "^6.3.0",
-        "ezsystems/ezpublish-kernel": "^6.0.0|^7.0"
+        "ezsystems/ezplatform-kernel": "^1.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
