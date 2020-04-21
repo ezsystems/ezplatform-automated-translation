@@ -65,4 +65,9 @@ class TranslationController extends Controller
 
         return $response;
     }
+
+    public function removeAction(Request $request): Response
+    {
+        return $this->translationController->removeAction($request);
+    }
 }
