@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace EzSystems\EzPlatformAutomatedTranslation;
 
+use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use PHPUnit\Framework\TestCase;
 use eZ\Publish\Core\Repository\Values\Content\Content;
 use eZ\Publish\Core\Repository\Values\Content\VersionInfo;
@@ -20,7 +21,7 @@ use eZ\Publish\API\Repository\Values\Content\ContentInfo;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\Core\FieldType\TextLine;
-use eZ\Publish\Core\FieldType\RichText;
+use EzSystems\EzPlatformRichText\eZ\FieldType\RichText;
 
 class EncoderTest extends TestCase
 {
@@ -32,8 +33,7 @@ class EncoderTest extends TestCase
         parent::setUp();
 
         $this->configResolver = $this
-            ->getMockBuilder('eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\ConfigResolver')
-            ->disableOriginalConstructor()
+            ->getMockBuilder(ConfigResolverInterface::class)
             ->getMock();
 
         $this->configResolver
@@ -58,7 +58,15 @@ class EncoderTest extends TestCase
     public function testEncodeTwoTextline()
     {
         $contentTypeServiceMock = $this->getContentTypeServiceMock();
-        $contentType            = $this->getMockForAbstractClass(ContentType::class);
+        $contentType            = $this->getMockForAbstractClass(
+            ContentType::class,
+            [],
+            '',
+            true,
+            true,
+            true,
+            ['getFieldDefinition']
+        );
         $fieldDefinition        = $this->getMockBuilder(FieldDefinition::class)
             ->setConstructorArgs([
                 [
@@ -129,7 +137,15 @@ class EncoderTest extends TestCase
     public function testEncodeTwoRichText()
     {
         $contentTypeServiceMock = $this->getContentTypeServiceMock();
-        $contentType            = $this->getMockForAbstractClass(ContentType::class);
+        $contentType            = $this->getMockForAbstractClass(
+            ContentType::class,
+            [],
+            '',
+            true,
+            true,
+            true,
+            ['getFieldDefinition']
+        );
         $fieldDefinition        = $this->getMockBuilder(FieldDefinition::class)
             ->setConstructorArgs([
                 [
@@ -203,7 +219,15 @@ class EncoderTest extends TestCase
     public function testEncodeTwoRichTextWithTwoEzembed()
     {
         $contentTypeServiceMock = $this->getContentTypeServiceMock();
-        $contentType            = $this->getMockForAbstractClass(ContentType::class);
+        $contentType            = $this->getMockForAbstractClass(
+            ContentType::class,
+            [],
+            '',
+            true,
+            true,
+            true,
+            ['getFieldDefinition']
+        );
         $fieldDefinition        = $this->getMockBuilder(FieldDefinition::class)
             ->setConstructorArgs([
                 [
