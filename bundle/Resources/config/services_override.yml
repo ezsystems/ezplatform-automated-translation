@@ -1,4 +1,6 @@
 services:
-   EzSystems\EzPlatformAutomatedTranslationBundle\Controller\:
-        resource: "../../Controller/*"
-        parent: EzSystems\EzPlatformAdminUiBundle\Controller\Controller
+    EzSystems\EzPlatformAutomatedTranslationBundle\Controller\TranslationController:
+        decorates: EzSystems\EzPlatformAdminUiBundle\Controller\TranslationController
+        autoconfigure: true
+        autowire: true
+        tags: ['controller.service_arguments']

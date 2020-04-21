@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 namespace EzSystems\EzPlatformAutomatedTranslation;
 
-use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\ConfigResolver;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\Values\Content\Content;
-use eZ\Publish\Core\FieldType\RichText\Value as RichTextValue;
+use EzSystems\EzPlatformRichText\eZ\FieldType\RichText\Value as RichTextValue;
 use eZ\Publish\Core\FieldType\TextLine\Value as TextLineValue;
+use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use EzSystems\EzPlatformRichText\eZ\FieldType\RichText\Value as EzPlatformRichTextValue;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 
@@ -106,9 +106,9 @@ class Encoder
      * Encoder constructor.
      *
      * @param ContentTypeService $contentTypeService
-     * @param ConfigResolver     $configResolver
+     * @param ConfigResolverInterface $configResolver
      */
-    public function __construct(ContentTypeService $contentTypeService, ConfigResolver $configResolver)
+    public function __construct(ContentTypeService $contentTypeService, ConfigResolverInterface $configResolver)
     {
         $this->contentTypeService = $contentTypeService;
         $this->placeHolderMap     = [];

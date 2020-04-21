@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace EzSystems\EzPlatformAutomatedTranslationBundle\Controller;
 
 use EzSystems\EzPlatformAdminUiBundle\Controller\TranslationController as BaseTranslationController;
+use EzSystems\EzPlatformAdminUiBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,18 +21,27 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Class TranslationController.
  */
-class TranslationController extends BaseTranslationController
+class TranslationController extends Controller
 {
+    /**
+     * @var \EzSystems\EzPlatformAdminUiBundle\Controller\TranslationController
+     */
+    private $translationController;
+
+    public function __construct(BaseTranslationController $translationController)
+    {
+        $this->translationController = $translationController;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function addAction(Request $request): Response
     {
-        $response = parent::addAction($request);
+        $response = $this->translationController->addAction($request);
         if (!$response instanceof RedirectResponse) {
             return $response;
         }
-
         $targetUrl    = $response->getTargetUrl();
         $pattern      = str_replace(
             '/',

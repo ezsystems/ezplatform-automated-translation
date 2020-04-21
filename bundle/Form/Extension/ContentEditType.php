@@ -13,10 +13,10 @@ declare(strict_types=1);
 namespace EzSystems\EzPlatformAutomatedTranslationBundle\Form\Extension;
 
 use eZ\Publish\API\Repository\ContentTypeService;
-use EzSystems\EzPlatformAdminUi\RepositoryForms\Data\ContentTranslationData;
+use EzSystems\EzPlatformAdminUi\Form\Data\ContentTranslationData;
 use EzSystems\EzPlatformAutomatedTranslation\Translator;
-use EzSystems\RepositoryForms\Data\Content\FieldData;
-use EzSystems\RepositoryForms\Form\Type\Content\ContentEditType as BaseContentEditType;
+use EzSystems\EzPlatformContentForms\Data\Content\FieldData;
+use EzSystems\EzPlatformContentForms\Form\Type\Content\ContentEditType as BaseContentEditType;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -63,9 +63,9 @@ class ContentEditType extends AbstractTypeExtension
     /**
      * {@inheritdoc}
      */
-    public function getExtendedType(): string
+    public static function getExtendedTypes(): iterable
     {
-        return BaseContentEditType::class;
+        return [BaseContentEditType::class];
     }
 
     /**

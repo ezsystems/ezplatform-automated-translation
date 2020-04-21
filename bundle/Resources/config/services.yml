@@ -25,11 +25,11 @@ services:
 
     EzSystems\EzPlatformAutomatedTranslationBundle\Form\Extension\ContentEditType:
         tags:
-            - { name: form.type_extension, extended_type: EzSystems\RepositoryForms\Form\Type\Content\ContentEditType }
+            - { name: form.type_extension, extended_type: EzSystems\EzPlatformContentForms\Form\Type\Content\ContentEditType }
 
 
     EzSystems\EzPlatformAutomatedTranslationBundle\Form\Extension\LanguageCreateType:
         bind:
-            $localeList: %ezpublish.locale.conversion_map%
+            $localeList: '%ezpublish.locale.conversion_map%'
         tags:
             - { name: form.type_extension, extended_type: EzSystems\EzPlatformAdminUi\Form\Type\Language\LanguageCreateType }

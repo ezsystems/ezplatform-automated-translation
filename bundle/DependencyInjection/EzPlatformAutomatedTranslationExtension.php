@@ -43,10 +43,6 @@ class EzPlatformAutomatedTranslationExtension extends Extension
             return;
         }
 
-        $asseticBundles   = $container->getParameter('assetic.bundles');
-        $asseticBundles[] = 'EzPlatformAutomatedTranslationBundle';
-        $container->setParameter('assetic.bundles', $asseticBundles);
-
         $loader->load('ezadminui.yml');
         $loader->load('default_settings.yml');
         $loader->load('services.yml');

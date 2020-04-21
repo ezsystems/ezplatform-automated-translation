@@ -25,8 +25,8 @@ class Configuration extends SiteAccessAware\Configuration
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode    = $treeBuilder->root('ez_platform_automated_translation');
+        $treeBuilder = new TreeBuilder('ez_platform_automated_translation');
+        $rootNode    = $treeBuilder->getRootNode();
         $systemNode  = $this->generateScopeBaseNode($rootNode);
         $systemNode
             ->variableNode('configurations')->end()
