@@ -1,12 +1,8 @@
 <?php
+
 /**
- * eZ Automated Translation Bundle.
- *
- * @package   EzSystems\eZAutomatedTranslationBundle
- *
- * @author    Novactive <s.morel@novactive.com>
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
- * @license   For full copyright and license information view LICENSE file distributed with this source code.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
 declare(strict_types=1);
 
@@ -57,10 +53,10 @@ class Translator
         ClientProvider $clientProvider,
         Encoder $encoder
     ) {
-        $this->guard           = $guard;
+        $this->guard = $guard;
         $this->localeConverter = $localeConverter;
-        $this->clientProvider  = $clientProvider;
-        $this->encoder         = $encoder;
+        $this->clientProvider = $clientProvider;
+        $this->encoder = $encoder;
     }
 
     /**
@@ -80,10 +76,10 @@ class Translator
         }
         $this->guard->enforceTargetLanguageExist($to);
 
-        $sourceContent     = $this->guard->fetchContent($content, $from);
-        $payload           = $this->encoder->encode($sourceContent);
-        $posixTo           = $this->localeConverter->convertToPOSIX($to);
-        $remoteService     = $this->clientProvider->get($remoteServiceKey);
+        $sourceContent = $this->guard->fetchContent($content, $from);
+        $payload = $this->encoder->encode($sourceContent);
+        $posixTo = $this->localeConverter->convertToPOSIX($to);
+        $remoteService = $this->clientProvider->get($remoteServiceKey);
         $translatedPayload = $remoteService->translate($payload, $posixFrom, $posixTo);
 
         return $this->encoder->decode($translatedPayload);
@@ -101,9 +97,9 @@ class Translator
     {
         $translatedFields = $this->getTranslatedFields($from, $to, $remoteServiceKey, $content);
 
-        $contentService                           = $this->repository->getContentService();
-        $contentDraft                             = $contentService->createContentDraft($content->contentInfo);
-        $contentUpdateStruct                      = $contentService->newContentUpdateStruct();
+        $contentService = $this->repository->getContentService();
+        $contentDraft = $contentService->createContentDraft($content->contentInfo);
+        $contentUpdateStruct = $contentService->newContentUpdateStruct();
         $contentUpdateStruct->initialLanguageCode = $to;
 
         $contentType = $this->repository->getContentTypeService()->loadContentType(
@@ -113,7 +109,7 @@ class Translator
         foreach ($contentType->getFieldDefinitions() as $field) {
             /** @var FieldDefinition $field */
             $fieldName = $field->identifier;
-            $newValue  = $translatedFields[$fieldName] ?? $content->getFieldValue($fieldName);
+            $newValue = $translatedFields[$fieldName] ?? $content->getFieldValue($fieldName);
             $contentUpdateStruct->setField($fieldName, $newValue);
         }
 

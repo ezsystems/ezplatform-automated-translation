@@ -1,12 +1,8 @@
 <?php
+
 /**
- * eZ Automated Translation Bundle.
- *
- * @package   EzSystems\eZAutomatedTranslationBundle
- *
- * @author    Novactive <s.morel@novactive.com>
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
- * @license   For full copyright and license information view LICENSE file distributed with this source code.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
 declare(strict_types=1);
 
@@ -49,7 +45,7 @@ class TranslationAddType extends AbstractTypeExtension
      */
     public function __construct(ClientProvider $clientProvider, LocaleConverterInterface $localeConverter)
     {
-        $this->clientProvider  = $clientProvider;
+        $this->clientProvider = $clientProvider;
         $this->localeConverter = $localeConverter;
     }
 
@@ -61,13 +57,12 @@ class TranslationAddType extends AbstractTypeExtension
         return [BaseTranslationAddType::class];
     }
 
-
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $clients      = $this->clientProvider->getClients();
+        $clients = $this->clientProvider->getClients();
         $clientsCount = count($clients);
 
         if ($clientsCount <= 0) {
@@ -80,9 +75,9 @@ class TranslationAddType extends AbstractTypeExtension
                     'translatorAlias',
                     CheckboxType::class,
                     [
-                        'label'    => $client->getServiceFullName(),
-                        'value'    => $client->getServiceAlias(),
-                        'data'     => true,
+                        'label' => $client->getServiceFullName(),
+                        'value' => $client->getServiceAlias(),
+                        'data' => true,
                         'required' => false,
                     ]
                 );
@@ -96,11 +91,11 @@ class TranslationAddType extends AbstractTypeExtension
                 'translatorAlias',
                 ChoiceType::class,
                 [
-                    'label'        => false,
-                    'expanded'     => false,
-                    'multiple'     => false,
-                    'required'     => false,
-                    'choices'      => ['' => 'no-service'] + $this->clientProvider->getClients(),
+                    'label' => false,
+                    'expanded' => false,
+                    'multiple' => false,
+                    'required' => false,
+                    'choices' => ['' => 'no-service'] + $this->clientProvider->getClients(),
                     'choice_label' => function ($client) {
                         if ($client instanceof ClientInterface) {
                             return ucfirst($client->getServiceFullName());
@@ -134,7 +129,7 @@ class TranslationAddType extends AbstractTypeExtension
                 /** @var Form $language */
                 /** @var FormBuilderInterface $config */
                 $config = $language->getConfig();
-                $lang   = $config->getOption('value');
+                $lang = $config->getOption('value');
                 foreach ($this->clientProvider->getClients() as $client) {
                     $posix = $this->localeConverter->convertToPOSIX($lang);
                     if (null === $posix) {

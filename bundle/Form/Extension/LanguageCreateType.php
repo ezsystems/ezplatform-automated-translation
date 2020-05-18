@@ -1,12 +1,8 @@
 <?php
+
 /**
- * eZ Automated Translation Bundle.
- *
- * @package   EzSystems\eZAutomatedTranslationBundle
- *
- * @author    Novactive <s.morel@novactive.com>
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
- * @license   For full copyright and license information view LICENSE file distributed with this source code.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
 declare(strict_types=1);
 
@@ -57,10 +53,10 @@ class LanguageCreateType extends AbstractTypeExtension
             'languageCode',
             ChoiceType::class,
             [
-                'label'    => /* @Desc("Language code") */
+                'label' => /* @Desc("Language code") */
                     'ezplatform.language.create.language_code',
                 'required' => false,
-                'choices'  => array_combine($this->localeList, $this->localeList),
+                'choices' => array_combine($this->localeList, $this->localeList),
             ]
         );
     }

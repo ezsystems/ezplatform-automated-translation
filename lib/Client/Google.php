@@ -1,12 +1,8 @@
 <?php
+
 /**
- * eZ Automated Translation Bundle.
- *
- * @package   EzSystems\eZAutomatedTranslationBundle
- *
- * @author    Novactive <s.morel@novactive.com>
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
- * @license   For full copyright and license information view LICENSE file distributed with this source code.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
 declare(strict_types=1);
 
@@ -59,10 +55,10 @@ class Google implements ClientInterface
     public function translate(string $payload, ?string $from, string $to): string
     {
         $parameters = [
-            'key'    => $this->apiKey,
+            'key' => $this->apiKey,
             'target' => $this->normalized($to),
             'format' => 'html',
-            'q'      => $payload,
+            'q' => $payload,
         ];
 
         if (null !== $from) {
@@ -71,14 +67,14 @@ class Google implements ClientInterface
             ];
         }
 
-        $http     = new Client(
+        $http = new Client(
             [
                 'base_uri' => 'https://translation.googleapis.com/',
-                'timeout'  => 10.0,
+                'timeout' => 10.0,
             ]
         );
         $response = $http->post('/language/translate/v2', ['form_params' => $parameters]);
-        $json     = json_decode($response->getBody()->getContents());
+        $json = json_decode($response->getBody()->getContents());
 
         return $json->data->translations[0]->translatedText;
     }
@@ -123,6 +119,6 @@ class Google implements ClientInterface
         'hi', 'hu', 'gd', 'sr', 'st', 'ro', 'ru', 'sm', 'pa', 'te', 'th', 'tr', 'uk', 'yi', 'yo', 'zu', 'xh', 'sw',
         'is', 'ig', 'id', 'ga', 'it', 'ja', 'jw', 'kn', 'kk', 'km', 'ko', 'ku', 'ky', 'lo', 'la', 'lv', 'lt', 'lb',
         'cy', 'mk', 'mg', 'ms', 'ml', 'mt', 'mi', 'mr', 'mn', 'my', 'ne', 'vi', 'sn', 'sd', 'si', 'sk', 'pl', 'pt',
-        'fa', 'no', 'ny', 'ps', 'sl', 'so', 'es', 'su', 'tl', 'ceb', 'zh-CN', 'zh-TW', 'hmn', 'haw', 'he'
+        'fa', 'no', 'ny', 'ps', 'sl', 'so', 'es', 'su', 'tl', 'ceb', 'zh-CN', 'zh-TW', 'hmn', 'haw', 'he',
     ];
 }

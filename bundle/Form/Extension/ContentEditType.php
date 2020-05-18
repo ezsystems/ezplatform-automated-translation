@@ -1,12 +1,8 @@
 <?php
+
 /**
- * eZ Automated Translation Bundle.
- *
- * @package   EzSystems\eZAutomatedTranslationBundle
- *
- * @author    Novactive <s.morel@novactive.com>
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
- * @license   For full copyright and license information view LICENSE file distributed with this source code.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
 declare(strict_types=1);
 
@@ -55,8 +51,8 @@ class ContentEditType extends AbstractTypeExtension
         RequestStack $requestStack,
         ContentTypeService $contentTypeService
     ) {
-        $this->translator         = $translator;
-        $this->requestStack       = $requestStack;
+        $this->translator = $translator;
+        $this->requestStack = $requestStack;
         $this->contentTypeService = $contentTypeService;
     }
 
@@ -88,26 +84,26 @@ class ContentEditType extends AbstractTypeExtension
                     return;
                 }
                 $fromLanguageCode = $request->attributes->get('fromLanguageCode') ?? null;
-                $toLanguageCode   = $request->attributes->get('toLanguageCode') ?? null;
+                $toLanguageCode = $request->attributes->get('toLanguageCode') ?? null;
                 $translatedFields = $this->translator->getTranslatedFields(
                     $fromLanguageCode,
                     $toLanguageCode,
                     $request->query->get('translatorAlias'),
                     $data->content
                 );
-                $contentType      = $this->contentTypeService->loadContentType(
+                $contentType = $this->contentTypeService->loadContentType(
                     $data->content->contentInfo->contentTypeId
                 );
                 foreach ($data->content->getFieldsByLanguage() as $field) {
-                    $fieldDef   = $contentType->getFieldDefinition($field->fieldDefIdentifier);
+                    $fieldDef = $contentType->getFieldDefinition($field->fieldDefIdentifier);
                     $fieldValue = $translatedFields[$fieldDef->identifier] ??
                                   $data->content->getFieldValue($fieldDef->identifier, $fromLanguageCode);
                     $data->addFieldData(
                         new FieldData(
                             [
                                 'fieldDefinition' => $fieldDef,
-                                'field'           => $field,
-                                'value'           => $fieldValue,
+                                'field' => $field,
+                                'value' => $fieldValue,
                             ]
                         )
                     );

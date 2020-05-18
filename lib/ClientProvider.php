@@ -1,12 +1,8 @@
 <?php
+
 /**
- * eZ Automated Translation Bundle.
- *
- * @package   EzSystems\eZAutomatedTranslationBundle
- *
- * @author    Novactive <s.morel@novactive.com>
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
- * @license   For full copyright and license information view LICENSE file distributed with this source code.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
 declare(strict_types=1);
 
@@ -54,8 +50,8 @@ class ClientProvider
     private function addClient(ClientInterface $client): self
     {
         $configurations = $this->configResolver->getParameter('configurations', 'ez_platform_automated_translation');
-        $reflection     = new \ReflectionClass($client);
-        $key            = strtolower($reflection->getShortName());
+        $reflection = new \ReflectionClass($client);
+        $key = strtolower($reflection->getShortName());
         if (isset($configurations[$key])) {
             $client->setConfiguration($configurations[$key]);
             $this->clients[$key] = $client;

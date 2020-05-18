@@ -1,12 +1,8 @@
 <?php
+
 /**
- * eZ Automated Translation Bundle.
- *
- * @package   EzSystems\eZAutomatedTranslationBundle
- *
- * @author    Novactive <s.morel@novactive.com>
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
- * @license   For full copyright and license information view LICENSE file distributed with this source code.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
 declare(strict_types=1);
 
@@ -24,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class TranslateContentCommand.
  */
-class TranslateContentCommand extends Command
+final class TranslateContentCommand extends Command
 {
     use RepositoryAware;
     /**
@@ -75,8 +71,8 @@ class TranslateContentCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $contentId = (int) $input->getArgument('contentId');
-        $content   = $this->repository->getContentService()->loadContent($contentId);
-        $draft     = $this->translator->getTranslatedContent(
+        $content = $this->repository->getContentService()->loadContent($contentId);
+        $draft = $this->translator->getTranslatedContent(
             $input->getOption('from'),
             $input->getOption('to'),
             $input->getArgument('service'),

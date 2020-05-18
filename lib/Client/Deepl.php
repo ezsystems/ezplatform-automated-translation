@@ -1,12 +1,8 @@
 <?php
+
 /**
- * eZ Automated Translation Bundle.
- *
- * @package   EzSystems\eZAutomatedTranslationBundle
- *
- * @author    Novactive <s.morel@novactive.com>
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
- * @license   For full copyright and license information view LICENSE file distributed with this source code.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
 declare(strict_types=1);
 
@@ -59,10 +55,10 @@ class Deepl implements ClientInterface
     public function translate(string $payload, ?string $from, string $to): string
     {
         $parameters = [
-            'auth_key'     => $this->authKey,
-            'target_lang'  => $this->normalized($to),
+            'auth_key' => $this->authKey,
+            'target_lang' => $this->normalized($to),
             'tag_handling' => 'xml',
-            'text'         => $payload,
+            'text' => $payload,
         ];
 
         if (null !== $from) {
@@ -71,10 +67,10 @@ class Deepl implements ClientInterface
             ];
         }
 
-        $http     = new Client(
+        $http = new Client(
             [
                 'base_uri' => 'https://api.deepl.com',
-                'timeout'  => 5.0,
+                'timeout' => 5.0,
             ]
         );
         $response = $http->post('/v1/translate', ['form_params' => $parameters]);

@@ -1,12 +1,8 @@
 <?php
+
 /**
- * eZ Platform Automated Translation Bundle.
- *
- * @package   EzSystems\EzPlatformAutomatedTranslationBundle
- *
- * @author    Novactive <s.morel@novactive.com>
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
- * @license   For full copyright and license information view LICENSE file distributed with this source code.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
 declare(strict_types=1);
 
@@ -58,7 +54,7 @@ class EncoderTest extends TestCase
     public function testEncodeTwoTextline()
     {
         $contentTypeServiceMock = $this->getContentTypeServiceMock();
-        $contentType            = $this->getMockForAbstractClass(
+        $contentType = $this->getMockForAbstractClass(
             ContentType::class,
             [],
             '',
@@ -67,12 +63,12 @@ class EncoderTest extends TestCase
             true,
             ['getFieldDefinition']
         );
-        $fieldDefinition        = $this->getMockBuilder(FieldDefinition::class)
+        $fieldDefinition = $this->getMockBuilder(FieldDefinition::class)
             ->setConstructorArgs([
                 [
                     'fieldTypeIdentifier' => 'ezstring',
                     'isTranslatable' => true,
-                ]
+                ],
             ])
             ->getMockForAbstractClass();
 
@@ -126,6 +122,7 @@ class EncoderTest extends TestCase
 
         $fieldValues = array_reduce($content->getFields(), function ($collection, $field) {
             $collection[$field->fieldDefIdentifier] = $field->value;
+
             return $collection;
         }, []);
 
@@ -137,7 +134,7 @@ class EncoderTest extends TestCase
     public function testEncodeTwoRichText()
     {
         $contentTypeServiceMock = $this->getContentTypeServiceMock();
-        $contentType            = $this->getMockForAbstractClass(
+        $contentType = $this->getMockForAbstractClass(
             ContentType::class,
             [],
             '',
@@ -146,12 +143,12 @@ class EncoderTest extends TestCase
             true,
             ['getFieldDefinition']
         );
-        $fieldDefinition        = $this->getMockBuilder(FieldDefinition::class)
+        $fieldDefinition = $this->getMockBuilder(FieldDefinition::class)
             ->setConstructorArgs([
                 [
                     'fieldTypeIdentifier' => 'ezrichtext',
                     'isTranslatable' => true,
-                ]
+                ],
             ])
             ->getMockForAbstractClass();
 
@@ -208,6 +205,7 @@ class EncoderTest extends TestCase
 
         $fieldValues = array_reduce($content->getFields(), function ($collection, $field) {
             $collection[$field->fieldDefIdentifier] = $field->value;
+
             return $collection;
         }, []);
 
@@ -219,7 +217,7 @@ class EncoderTest extends TestCase
     public function testEncodeTwoRichTextWithTwoEzembed()
     {
         $contentTypeServiceMock = $this->getContentTypeServiceMock();
-        $contentType            = $this->getMockForAbstractClass(
+        $contentType = $this->getMockForAbstractClass(
             ContentType::class,
             [],
             '',
@@ -228,12 +226,12 @@ class EncoderTest extends TestCase
             true,
             ['getFieldDefinition']
         );
-        $fieldDefinition        = $this->getMockBuilder(FieldDefinition::class)
+        $fieldDefinition = $this->getMockBuilder(FieldDefinition::class)
             ->setConstructorArgs([
                 [
                     'fieldTypeIdentifier' => 'ezrichtext',
                     'isTranslatable' => true,
-                ]
+                ],
             ])
             ->getMockForAbstractClass();
 
@@ -290,6 +288,7 @@ class EncoderTest extends TestCase
 
         $fieldValues = array_reduce($content->getFields(), function ($collection, $field) {
             $collection[$field->fieldDefIdentifier] = $field->value;
+
             return $collection;
         }, []);
 
@@ -308,11 +307,12 @@ class EncoderTest extends TestCase
         $contentTypeServiceMock = $this
             ->getMockBuilder('eZ\Publish\API\Repository\ContentTypeService')
             ->getMock();
+
         return $contentTypeServiceMock;
     }
 
     protected function getFixture($name)
     {
-        return file_get_contents(dirname(__FILE__) . '/../fixtures/' . $name);
+        return file_get_contents(__DIR__ . '/../fixtures/' . $name);
     }
 }

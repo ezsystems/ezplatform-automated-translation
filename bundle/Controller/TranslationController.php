@@ -1,12 +1,8 @@
 <?php
+
 /**
- * eZ Automated Translation Bundle.
- *
- * @package   EzSystems\eZAutomatedTranslationBundle
- *
- * @author    Novactive <s.morel@novactive.com>
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
- * @license   For full copyright and license information view LICENSE file distributed with this source code.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
 declare(strict_types=1);
 
@@ -21,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Class TranslationController.
  */
-class TranslationController extends Controller
+final class TranslationController extends Controller
 {
     /**
      * @var \EzSystems\EzPlatformAdminUiBundle\Controller\TranslationController
@@ -42,23 +38,23 @@ class TranslationController extends Controller
         if (!$response instanceof RedirectResponse) {
             return $response;
         }
-        $targetUrl    = $response->getTargetUrl();
-        $pattern      = str_replace(
+        $targetUrl = $response->getTargetUrl();
+        $pattern = str_replace(
             '/',
             '\/?',
             urldecode(
                 $this->generateUrl(
                     'ezplatform.content.translate',
                     [
-                        'contentId'        => '([0-9]*)',
+                        'contentId' => '([0-9]*)',
                         'fromLanguageCode' => '([a-zA-Z-]*)',
-                        'toLanguageCode'   => '([a-zA-Z-]*)',
+                        'toLanguageCode' => '([a-zA-Z-]*)',
                     ]
                 )
             )
         );
         $serviceAlias = $request->request->get('add-translation')['translatorAlias'] ?? '';
-        if (1 !== preg_match("#{$pattern}#", $targetUrl) || '' === $serviceAlias) {
+        if ('' === $serviceAlias || 1 !== preg_match("#{$pattern}#", $targetUrl)) {
             return $response;
         }
         $response->setTargetUrl(sprintf('%s?translatorAlias=%s', $targetUrl, $serviceAlias));
