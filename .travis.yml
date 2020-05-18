@@ -21,4 +21,6 @@ script:
   - php vendor/bin/phpcs --standard=.cs/cs_ruleset.xml --extensions=php bundle/
   - php vendor/bin/phpcs --standard=.cs/cs_ruleset.xml --extensions=php lib/
   - php vendor/bin/phpcs --standard=.cs/cs_ruleset.xml --extensions=php tests/
+  - php vendor/bin/php-cs-fixer fix -v --dry-run --show-progress=estimating
   - php vendor/bin/phpunit
+
