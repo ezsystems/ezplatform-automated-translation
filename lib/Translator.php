@@ -30,24 +30,26 @@ class Translator
     /** @var Encoder */
     private $encoder;
 
-    /**
-     * Translator constructor.
-     *
-     * @param TranslatorGuard          $guard
-     * @param LocaleConverterInterface $localeConverter
-     * @param ClientProvider           $clientProvider
-     * @param Encoder                  $encoder
-     */
+    /** @var \eZ\Publish\API\Repository\ContentService */
+    private $contentService;
+
+    /** @var \eZ\Publish\API\Repository\ContentTypeService */
+    private $contentTypeService;
+
     public function __construct(
         TranslatorGuard $guard,
         LocaleConverterInterface $localeConverter,
         ClientProvider $clientProvider,
-        Encoder $encoder
+        Encoder $encoder,
+        ContentService $contentService,
+        ContentTypeService $contentTypeService
     ) {
         $this->guard = $guard;
         $this->localeConverter = $localeConverter;
         $this->clientProvider = $clientProvider;
         $this->encoder = $encoder;
+        $this->contentService = $contentService;
+        $this->contentTypeService = $contentTypeService;
     }
 
     public function getTranslatedFields(?string $from, ?string $to, string $remoteServiceKey, Content $content): array
@@ -72,12 +74,11 @@ class Translator
     {
         $translatedFields = $this->getTranslatedFields($from, $to, $remoteServiceKey, $content);
 
-        $contentService = $this->repository->getContentService();
-        $contentDraft = $contentService->createContentDraft($content->contentInfo);
-        $contentUpdateStruct = $contentService->newContentUpdateStruct();
+        $contentDraft = $this->contentService->createContentDraft($content->contentInfo);
+        $contentUpdateStruct = $this->contentService->newContentUpdateStruct();
         $contentUpdateStruct->initialLanguageCode = $to;
 
-        $contentType = $this->repository->getContentTypeService()->loadContentType(
+        $contentType = $this->contentTypeService->loadContentType(
             $content->contentInfo->contentTypeId
         );
 
@@ -88,6 +89,6 @@ class Translator
             $contentUpdateStruct->setField($fieldName, $newValue);
         }
 
-        return $contentService->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
+        return $this->contentService->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
     }
 }

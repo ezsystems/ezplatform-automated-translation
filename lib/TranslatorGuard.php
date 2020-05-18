@@ -27,12 +27,18 @@ class TranslatorGuard
 {
     use RepositoryAware;
 
-    /**
-     * @param Content $content
-     * @param string  $languageCode
-     *
-     * @return bool
-     */
+    /** @var \eZ\Publish\API\Repository\ContentService */
+    private $contentService;
+
+    /** @var \eZ\Publish\API\Repository\LanguageService */
+    private $languageService;
+
+    public function __construct(ContentService $contentService, LanguageService $languageService)
+    {
+        $this->contentService = $contentService;
+        $this->languageService = $languageService;
+    }
+
     public function isLanguageVersionExist(Content $content, string $languageCode): bool
     {
         return \in_array($languageCode, $content->versionInfo->languageCodes);
@@ -40,7 +46,7 @@ class TranslatorGuard
 
     public function isTargetLanguageVersionExist(string $languageCode): bool
     {
-        $languages = $this->repository->getContentLanguageService()->loadLanguages();
+        $languages = $this->languageService->loadLanguages();
         foreach ($languages as $language) {
             if ($language->enabled && $language->languageCode == $languageCode) {
                 return true;
@@ -69,9 +75,9 @@ class TranslatorGuard
     public function fetchContent(Content $content, ?string $languageCode): Content
     {
         if (null === $languageCode) {
-            return $this->repository->getContentService()->loadContentByContentInfo($content->contentInfo);
+            return $this->contentService->loadContentByContentInfo($content->contentInfo);
         }
 
-        return $this->repository->getContentService()->loadContentByContentInfo($content->contentInfo, [$languageCode]);
+        return $this->contentService->loadContentByContentInfo($content->contentInfo, [$languageCode]);
     }
 }
