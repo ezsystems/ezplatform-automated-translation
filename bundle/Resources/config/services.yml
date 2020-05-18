@@ -1,9 +1,8 @@
-parameters:
-
 services:
     _defaults:
         autowire: true
         public: false
+        autoconfigure: true
 
     EzSystems\EzPlatformAutomatedTranslation\:
         resource: '../../../lib'
@@ -17,7 +16,7 @@ services:
 
     EzSystems\EzPlatformAutomatedTranslationBundle\Command\:
         resource: '../../Command/*'
-        tags: ["console.command"]
+        tags: ['console.command']
 
     EzSystems\EzPlatformAutomatedTranslationBundle\Form\Extension\TranslationAddType:
         tags:
@@ -26,7 +25,6 @@ services:
     EzSystems\EzPlatformAutomatedTranslationBundle\Form\Extension\ContentEditType:
         tags:
             - { name: form.type_extension, extended_type: EzSystems\EzPlatformContentForms\Form\Type\Content\ContentEditType }
-
 
     EzSystems\EzPlatformAutomatedTranslationBundle\Form\Extension\LanguageCreateType:
         bind:

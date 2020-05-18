@@ -14,14 +14,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Class TranslationController.
- */
 final class TranslationController extends Controller
 {
-    /**
-     * @var \EzSystems\EzPlatformAdminUiBundle\Controller\TranslationController
-     */
+    /** @var \EzSystems\EzPlatformAdminUiBundle\Controller\TranslationController */
     private $translationController;
 
     public function __construct(BaseTranslationController $translationController)
@@ -29,9 +24,6 @@ final class TranslationController extends Controller
         $this->translationController = $translationController;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function addAction(Request $request): Response
     {
         $response = $this->translationController->addAction($request);

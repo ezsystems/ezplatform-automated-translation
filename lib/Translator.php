@@ -8,35 +8,26 @@ declare(strict_types=1);
 
 namespace EzSystems\EzPlatformAutomatedTranslation;
 
+use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
 
-/**
- * Class Translator.
- */
 class Translator
 {
     use RepositoryAware;
 
-    /**
-     * @var TranslatorGuard
-     */
+    /** @var TranslatorGuard */
     private $guard;
 
-    /**
-     * @var LocaleConverterInterface
-     */
+    /** @var LocaleConverterInterface */
     private $localeConverter;
 
-    /**
-     * @var ClientProvider
-     */
+    /** @var ClientProvider */
     private $clientProvider;
 
-    /**
-     * @var Encoder
-     */
+    /** @var Encoder */
     private $encoder;
 
     /**
@@ -59,14 +50,6 @@ class Translator
         $this->encoder = $encoder;
     }
 
-    /**
-     * @param string  $from
-     * @param string  $to
-     * @param string  $remoteServiceKey
-     * @param Content $content
-     *
-     * @return Content
-     */
     public function getTranslatedFields(?string $from, ?string $to, string $remoteServiceKey, Content $content): array
     {
         $posixFrom = null;
@@ -85,14 +68,6 @@ class Translator
         return $this->encoder->decode($translatedPayload);
     }
 
-    /**
-     * @param string  $from
-     * @param string  $to
-     * @param string  $remoteServiceKey
-     * @param Content $content
-     *
-     * @return Content
-     */
     public function getTranslatedContent(string $from, string $to, string $remoteServiceKey, Content $content): Content
     {
         $translatedFields = $this->getTranslatedFields($from, $to, $remoteServiceKey, $content);

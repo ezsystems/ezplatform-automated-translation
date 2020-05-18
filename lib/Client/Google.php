@@ -18,29 +18,30 @@ use GuzzleHttp\Client;
 class Google implements ClientInterface
 {
     /**
-     * @var string
+     * Google List of available code https://cloud.google.com/translate/docs/languages.
      */
+    private const LANGUAGE_CODES = [
+        'af', 'sq', 'am', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'bs', 'bg', 'ca', 'co', 'hr', 'ur', 'uz', 'ta', 'tg',
+        'cs', 'da', 'nl', 'en', 'eo', 'et', 'fi', 'fr', 'fy', 'gl', 'ka', 'de', 'el', 'gu', 'ht', 'ha', 'iw', 'sv',
+        'hi', 'hu', 'gd', 'sr', 'st', 'ro', 'ru', 'sm', 'pa', 'te', 'th', 'tr', 'uk', 'yi', 'yo', 'zu', 'xh', 'sw',
+        'is', 'ig', 'id', 'ga', 'it', 'ja', 'jw', 'kn', 'kk', 'km', 'ko', 'ku', 'ky', 'lo', 'la', 'lv', 'lt', 'lb',
+        'cy', 'mk', 'mg', 'ms', 'ml', 'mt', 'mi', 'mr', 'mn', 'my', 'ne', 'vi', 'sn', 'sd', 'si', 'sk', 'pl', 'pt',
+        'fa', 'no', 'ny', 'ps', 'sl', 'so', 'es', 'su', 'tl', 'ceb', 'zh-CN', 'zh-TW', 'hmn', 'haw', 'he',
+    ];
+
+    /** @var string */
     private $apiKey;
 
-    /**
-     * {@inheritdoc}
-     */
     public function getServiceAlias(): string
     {
         return 'google';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getServiceFullName(): string
     {
         return 'Google Translate';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setConfiguration(array $configuration): void
     {
         if (!isset($configuration['apiKey'])) {
@@ -49,9 +50,6 @@ class Google implements ClientInterface
         $this->apiKey = $configuration['apiKey'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function translate(string $payload, ?string $from, string $to): string
     {
         $parameters = [
@@ -79,19 +77,11 @@ class Google implements ClientInterface
         return $json->data->translations[0]->translatedText;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function supportsLanguage(string $languageCode)
+    public function supportsLanguage(string $languageCode): bool
     {
         return \in_array($this->normalized($languageCode), self::LANGUAGE_CODES);
     }
 
-    /**
-     * @param string $languageCode
-     *
-     * @return string
-     */
     private function normalized(string $languageCode): string
     {
         if (\in_array($languageCode, self::LANGUAGE_CODES)) {
@@ -109,16 +99,4 @@ class Google implements ClientInterface
         }
         throw new InvalidLanguageCodeException($languageCode, $this->getServiceAlias());
     }
-
-    /**
-     * Google List of available code https://cloud.google.com/translate/docs/languages.
-     */
-    private const LANGUAGE_CODES = [
-        'af', 'sq', 'am', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'bs', 'bg', 'ca', 'co', 'hr', 'ur', 'uz', 'ta', 'tg',
-        'cs', 'da', 'nl', 'en', 'eo', 'et', 'fi', 'fr', 'fy', 'gl', 'ka', 'de', 'el', 'gu', 'ht', 'ha', 'iw', 'sv',
-        'hi', 'hu', 'gd', 'sr', 'st', 'ro', 'ru', 'sm', 'pa', 'te', 'th', 'tr', 'uk', 'yi', 'yo', 'zu', 'xh', 'sw',
-        'is', 'ig', 'id', 'ga', 'it', 'ja', 'jw', 'kn', 'kk', 'km', 'ko', 'ku', 'ky', 'lo', 'la', 'lv', 'lt', 'lb',
-        'cy', 'mk', 'mg', 'ms', 'ml', 'mt', 'mi', 'mr', 'mn', 'my', 'ne', 'vi', 'sn', 'sd', 'si', 'sk', 'pl', 'pt',
-        'fa', 'no', 'ny', 'ps', 'sl', 'so', 'es', 'su', 'tl', 'ceb', 'zh-CN', 'zh-TW', 'hmn', 'haw', 'he',
-    ];
 }

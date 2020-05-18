@@ -11,27 +11,14 @@ namespace EzSystems\EzPlatformAutomatedTranslation;
 use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use EzSystems\EzPlatformAutomatedTranslation\Client\ClientInterface;
 
-/**
- * Class ClientProvider.
- */
 class ClientProvider
 {
-    /**
-     * @var ClientInterface[]
-     */
+    /** @var ClientInterface[] */
     private $clients;
 
-    /**
-     * @var ConfigResolverInterface
-     */
+    /**  @var ConfigResolverInterface */
     private $configResolver;
 
-    /**
-     * ClientProvider constructor.
-     *
-     * @param ConfigResolverInterface $configResolver
-     * @param iterable                $clients
-     */
     public function __construct(iterable $clients, ConfigResolverInterface $configResolver)
     {
         $this->configResolver = $configResolver;

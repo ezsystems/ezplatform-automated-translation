@@ -11,22 +11,13 @@ namespace EzSystems\EzPlatformAutomatedTranslationBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-/**
- * Class EzPlatformAutomatedTranslationBundle.
- */
 class EzPlatformAutomatedTranslationBundle extends Bundle
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getParent(): ?string
     {
         return 'EzPlatformAdminUiBundle';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);

@@ -10,17 +10,8 @@ namespace EzSystems\EzPlatformAutomatedTranslation\Exception;
 
 use InvalidArgumentException;
 
-/**
- * Class InvalidLanguageCodeException.
- */
 class InvalidLanguageCodeException extends InvalidArgumentException
 {
-    /**
-     * InvalidLanguageCodeException constructor.
-     *
-     * @param string $languageCode
-     * @param string $driver
-     */
     public function __construct(string $languageCode, string $driver)
     {
         parent::__construct("$languageCode not recognized by $driver");

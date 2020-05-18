@@ -12,23 +12,14 @@ use EzSystems\EzPlatformAdminUi\Form\Data\Content\Translation\TranslationAddData
 use EzSystems\EzPlatformAutomatedTranslationBundle\Form\Data\TranslationAddData;
 use Symfony\Component\Form\DataTransformerInterface;
 
-/**
- * Class TranslationAddDataTransformer.
- */
 class TranslationAddDataTransformer implements DataTransformerInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function transform($value)
     {
         /* @var BaseTranslationAddData $value */
         return new TranslationAddData($value->getLocation(), $value->getLanguage(), $value->getBaseLanguage());
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function reverseTransform($value)
     {
         return $value;

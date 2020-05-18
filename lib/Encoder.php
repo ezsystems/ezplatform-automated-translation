@@ -88,22 +88,12 @@ class Encoder
      */
     private $nonValidAttributeTags;
 
-    /**
-     * @var ContentTypeService
-     */
+    /** @var ContentTypeService */
     private $contentTypeService;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $placeHolderMap;
 
-    /**
-     * Encoder constructor.
-     *
-     * @param ContentTypeService $contentTypeService
-     * @param ConfigResolverInterface $configResolver
-     */
     public function __construct(ContentTypeService $contentTypeService, ConfigResolverInterface $configResolver)
     {
         $this->contentTypeService = $contentTypeService;
@@ -127,11 +117,6 @@ class Encoder
         $this->nonValidAttributeTags = ['title'] + $attributes;
     }
 
-    /**
-     * @param Content $content
-     *
-     * @return string
-     */
     public function encode(Content $content): string
     {
         $results = [];
@@ -170,11 +155,6 @@ class Encoder
         return $payload;
     }
 
-    /**
-     * @param string $xml
-     *
-     * @return array
-     */
     public function decode(string $xml): array
     {
         $encoder = new XmlEncoder();
@@ -204,11 +184,6 @@ class Encoder
         return $results;
     }
 
-    /**
-     * @param RichTextValue $value
-     *
-     * @return string
-     */
     private function richTextEncode(RichTextValue $value): string
     {
         $xmlString = (string) $value;
@@ -243,11 +218,6 @@ class Encoder
         return $xmlString;
     }
 
-    /**
-     * @param string $value
-     *
-     * @return string
-     */
     private function richTextDecode(string $value): string
     {
         $value = $this->decodeNonTranslatableCharacters($value);
@@ -275,11 +245,6 @@ class Encoder
         return $value;
     }
 
-    /**
-     * @param string $value
-     *
-     * @return string
-     */
     private function encodeNonTranslatableCharacters(string $value): string
     {
         return str_replace(
@@ -289,11 +254,6 @@ class Encoder
         );
     }
 
-    /**
-     * @param string $value
-     *
-     * @return string
-     */
     private function decodeNonTranslatableCharacters(string $value): string
     {
         return str_replace(

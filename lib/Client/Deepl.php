@@ -12,35 +12,21 @@ use EzSystems\EzPlatformAutomatedTranslation\Exception\ClientNotConfiguredExcept
 use EzSystems\EzPlatformAutomatedTranslation\Exception\InvalidLanguageCodeException;
 use GuzzleHttp\Client;
 
-/**
- * Class Deepl.
- */
 class Deepl implements ClientInterface
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $authKey;
 
-    /**
-     * {@inheritdoc}
-     */
     public function getServiceAlias(): string
     {
         return 'deepl';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getServiceFullName(): string
     {
         return 'Deepl';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setConfiguration(array $configuration): void
     {
         if (!isset($configuration['authKey'])) {
@@ -49,9 +35,6 @@ class Deepl implements ClientInterface
         $this->authKey = $configuration['authKey'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function translate(string $payload, ?string $from, string $to): string
     {
         $parameters = [
@@ -80,17 +63,11 @@ class Deepl implements ClientInterface
         return $json->translations[0]->text;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function supportsLanguage(string $languageCode)
+    public function supportsLanguage(string $languageCode): bool
     {
         return \in_array($this->normalized($languageCode), self::LANGUAGE_CODES);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     private function normalized(string $languageCode): string
     {
         if (\in_array($languageCode, self::LANGUAGE_CODES)) {

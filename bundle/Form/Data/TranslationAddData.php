@@ -10,27 +10,18 @@ namespace EzSystems\EzPlatformAutomatedTranslationBundle\Form\Data;
 
 use EzSystems\EzPlatformAdminUi\Form\Data\Content\Translation\TranslationAddData as BaseTranslationAddData;
 
-/**
- * Class TranslationAddData.
- */
 class TranslationAddData extends BaseTranslationAddData
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $translatorAlias;
 
-    /**
-     * @return mixed
-     */
+    /** @return mixed */
     public function getTranslatorAlias()
     {
         return $this->translatorAlias;
     }
 
-    /**
-     * @param mixed $translatorAlias
-     */
+    /** @param mixed $translatorAlias */
     public function setTranslatorAlias($translatorAlias): void
     {
         $this->translatorAlias = $translatorAlias;

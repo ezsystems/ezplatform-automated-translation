@@ -11,14 +11,8 @@ namespace EzSystems\EzPlatformAutomatedTranslationBundle\DependencyInjection;
 use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\SiteAccessAware;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
-/**
- * Class Configuration.
- */
 class Configuration extends SiteAccessAware\Configuration
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('ez_platform_automated_translation');

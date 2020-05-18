@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace EzSystems\EzPlatformAutomatedTranslation;
 
+use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\API\Repository\LanguageService;
 use eZ\Publish\API\Repository\Values\Content\Content;
 
 /**
@@ -36,11 +38,6 @@ class TranslatorGuard
         return \in_array($languageCode, $content->versionInfo->languageCodes);
     }
 
-    /**
-     * @param string $languageCode
-     *
-     * @return bool
-     */
     public function isTargetLanguageVersionExist(string $languageCode): bool
     {
         $languages = $this->repository->getContentLanguageService()->loadLanguages();
@@ -53,10 +50,6 @@ class TranslatorGuard
         return false;
     }
 
-    /**
-     * @param Content $content
-     * @param string  $languageCode
-     */
     public function enforceSourceLanguageVersionExist(Content $content, string $languageCode): void
     {
         if (!$this->isLanguageVersionExist($content, $languageCode)) {
@@ -64,9 +57,6 @@ class TranslatorGuard
         }
     }
 
-    /**
-     * @param string $languageCode
-     */
     public function enforceTargetLanguageExist(string $languageCode): void
     {
         if (!$this->isTargetLanguageVersionExist($languageCode)) {
@@ -76,12 +66,6 @@ class TranslatorGuard
         }
     }
 
-    /**
-     * @param Content $content
-     * @param string  $languageCode
-     *
-     * @return Content
-     */
     public function fetchContent(Content $content, ?string $languageCode): Content
     {
         if (null === $languageCode) {

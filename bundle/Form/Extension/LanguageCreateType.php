@@ -13,39 +13,21 @@ use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-/**
- * Class LanguageCreateType.
- */
 class LanguageCreateType extends AbstractTypeExtension
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $localeList;
 
-    /**
-     * LanguageCreateType constructor.
-     *
-     * @param array $localeList
-     */
     public function __construct(array $localeList)
     {
         $this->localeList = array_keys($localeList);
-        // To Be Remove for PROD ready plugin
-        $this->localeList['klingon'] = 'klingon';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function getExtendedTypes(): iterable
     {
         return [BaseLanguageCreateType::class];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->remove('languageCode');

@@ -10,9 +10,6 @@ namespace EzSystems\EzPlatformAutomatedTranslation\Exception;
 
 use RuntimeException;
 
-/**
- * Class ClientNotConfiguredException.
- */
 class ClientNotConfiguredException extends RuntimeException
 {
 }

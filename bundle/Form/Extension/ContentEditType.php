@@ -19,33 +19,17 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-/**
- * Class ContentEditType.
- */
 class ContentEditType extends AbstractTypeExtension
 {
-    /**
-     * @var Translator
-     */
+    /** @var Translator */
     private $translator;
 
-    /**
-     * @var RequestStack
-     */
+    /** @var RequestStack */
     private $requestStack;
 
-    /**
-     * @var ContentTypeService
-     */
+    /** @var ContentTypeService */
     private $contentTypeService;
 
-    /**
-     * ContentEditType constructor.
-     *
-     * @param Translator         $translator
-     * @param RequestStack       $requestStack
-     * @param ContentTypeService $contentTypeService
-     */
     public function __construct(
         Translator $translator,
         RequestStack $requestStack,
@@ -56,17 +40,11 @@ class ContentEditType extends AbstractTypeExtension
         $this->contentTypeService = $contentTypeService;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function getExtendedTypes(): iterable
     {
         return [BaseContentEditType::class];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->addEventListener(
@@ -83,8 +61,8 @@ class ContentEditType extends AbstractTypeExtension
                 if (!$request->query->has('translatorAlias')) {
                     return;
                 }
-                $fromLanguageCode = $request->attributes->get('fromLanguageCode') ?? null;
-                $toLanguageCode = $request->attributes->get('toLanguageCode') ?? null;
+                $fromLanguageCode = $request->attributes->get('fromLanguageCode', null);
+                $toLanguageCode = $request->attributes->get('toLanguageCode', null);
                 $translatedFields = $this->translator->getTranslatedFields(
                     $fromLanguageCode,
                     $toLanguageCode,

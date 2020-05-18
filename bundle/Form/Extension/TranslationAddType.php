@@ -22,44 +22,27 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * Class TranslationAddType.
- */
 class TranslationAddType extends AbstractTypeExtension
 {
-    /**
-     * @var ClientProvider
-     */
+    /** @var ClientProvider */
     private $clientProvider;
 
-    /**
-     * @var LocaleConverterInterface
-     */
+    /** @var LocaleConverterInterface */
     private $localeConverter;
 
-    /**
-     * TranslationAddType constructor.
-     *
-     * @param ClientProvider           $clientProvider
-     * @param LocaleConverterInterface $localeConverter
-     */
-    public function __construct(ClientProvider $clientProvider, LocaleConverterInterface $localeConverter)
-    {
+    public function __construct(
+        ClientProvider $clientProvider,
+        LocaleConverterInterface $localeConverter
+    ) {
         $this->clientProvider = $clientProvider;
         $this->localeConverter = $localeConverter;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function getExtendedTypes(): iterable
     {
         return [BaseTranslationAddType::class];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $clients = $this->clientProvider->getClients();
@@ -115,9 +98,6 @@ class TranslationAddType extends AbstractTypeExtension
         $builder->addModelTransformer(new TranslationAddDataTransformer());
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         // let's pass to the template/form the possible language
@@ -149,9 +129,6 @@ class TranslationAddType extends AbstractTypeExtension
         parent::buildView($view, $form, $options);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(
