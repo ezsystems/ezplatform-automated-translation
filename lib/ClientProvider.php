@@ -16,7 +16,7 @@ class ClientProvider
     /** @var ClientInterface[] */
     private $clients;
 
-    /**  @var ConfigResolverInterface */
+    /** @var ConfigResolverInterface */
     private $configResolver;
 
     public function __construct(iterable $clients, ConfigResolverInterface $configResolver)
