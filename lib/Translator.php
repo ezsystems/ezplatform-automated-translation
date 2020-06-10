@@ -16,8 +16,6 @@ use eZ\Publish\Core\MVC\Symfony\Locale\LocaleConverterInterface;
 
 class Translator
 {
-    use RepositoryAware;
-
     /** @var TranslatorGuard */
     private $guard;
 

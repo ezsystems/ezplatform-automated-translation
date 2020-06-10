@@ -25,8 +25,6 @@ use eZ\Publish\API\Repository\Values\Content\Content;
  */
 class TranslatorGuard
 {
-    use RepositoryAware;
-
     /** @var \eZ\Publish\API\Repository\ContentService */
     private $contentService;
 
