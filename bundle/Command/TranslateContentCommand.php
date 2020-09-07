@@ -45,13 +45,13 @@ final class TranslateContentCommand extends Command
         PermissionResolver $permissionResolver,
         UserService $userService
     ) {
-        parent::__construct();
-
         $this->clientProvider = $clientProvider;
         $this->translator = $translator;
         $this->contentService = $contentService;
         $this->permissionResolver = $permissionResolver;
         $this->userService = $userService;
+
+        parent::__construct();
     }
 
     protected function configure(): void
