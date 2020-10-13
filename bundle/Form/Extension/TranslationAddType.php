@@ -16,7 +16,6 @@ use EzSystems\EzPlatformAutomatedTranslationBundle\Form\TranslationAddDataTransf
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -100,23 +99,24 @@ class TranslationAddType extends AbstractTypeExtension
 
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
+        parent::buildView($view, $form, $options);
+    }
+
+    public function finishView(FormView $view, FormInterface $form, array $options)
+    {
         // let's pass to the template/form the possible language
         $map = [];
 
-        $fillMap = function ($key, &$map) use ($form) {
-            $languages = $form->get($key);
+        $fillMap = function ($key, &$map) use ($view) {
+            $languages = $view->children[$key]->vars['choices'];
             foreach ($languages as $language) {
-                /** @var Form $language */
-                /** @var FormBuilderInterface $config */
-                $config = $language->getConfig();
-                $lang = $config->getOption('value');
                 foreach ($this->clientProvider->getClients() as $client) {
-                    $posix = $this->localeConverter->convertToPOSIX($lang);
+                    $posix = $this->localeConverter->convertToPOSIX($language->value);
                     if (null === $posix) {
                         continue;
                     }
                     if ($client->supportsLanguage($posix)) {
-                        $map[$client->getServiceAlias()][] = $lang;
+                        $map[$client->getServiceAlias()][] = $language->value;
                     }
                 }
             }
@@ -126,14 +126,12 @@ class TranslationAddType extends AbstractTypeExtension
         $fillMap('base_language', $map);
 
         $view->vars['autotranslated_data'] = $map;
-        parent::buildView($view, $form, $options);
+
+        parent::finishView($view, $form, $options);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(
-            [
-            ]
-        );
+        $resolver->setDefaults([]);
     }
 }

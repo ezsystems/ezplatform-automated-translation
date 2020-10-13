@@ -22,8 +22,9 @@ jQuery(function () {
     });
 
     $("form[name=add-translation]").submit(function () {
-        let targetLang = $(".ez-translation__label--selected input[id^=add-translation_language]:checked").val();
-        let sourceLang = $(".ez-translation__label--selected input[id^=add-translation_base_language]:checked").val();
+        let targetLang = $("select[name=add-translation\\[language\\]]").val();
+        let sourceLang = $("select[name=add-translation\\[base_language\\]]").val();
+        console.log(targetLang, sourceLang);
         let mapping = $container.data('languages-mapping');
         let $serviceSelector = $("#add-translation_translatorAlias");
         let serviceAlias = $serviceSelector.val();
