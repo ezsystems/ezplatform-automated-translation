@@ -97,26 +97,23 @@ class TranslationAddType extends AbstractTypeExtension
         $builder->addModelTransformer(new TranslationAddDataTransformer());
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options): void
-    {
-        parent::buildView($view, $form, $options);
-    }
-
-    public function finishView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options)
     {
         // let's pass to the template/form the possible language
         $map = [];
 
-        $fillMap = function ($key, &$map) use ($view) {
-            $languages = $view->children[$key]->vars['choices'];
-            foreach ($languages as $language) {
+        $fillMap = function ($key, &$map) use ($form) {
+            $languages = $form->get($key);
+            $choices = $languages->getConfig()->getAttribute('choice_list')->getChoices();
+            /** @var \eZ\Publish\API\Repository\Values\Content\Language $language */
+            foreach ($choices as $language) {
                 foreach ($this->clientProvider->getClients() as $client) {
-                    $posix = $this->localeConverter->convertToPOSIX($language->value);
+                    $posix = $this->localeConverter->convertToPOSIX($language->languageCode);
                     if (null === $posix) {
                         continue;
                     }
                     if ($client->supportsLanguage($posix)) {
-                        $map[$client->getServiceAlias()][] = $language->value;
+                        $map[$client->getServiceAlias()][] = $language->languageCode;
                     }
                 }
             }
@@ -126,8 +123,7 @@ class TranslationAddType extends AbstractTypeExtension
         $fillMap('base_language', $map);
 
         $view->vars['autotranslated_data'] = $map;
-
-        parent::finishView($view, $form, $options);
+        parent::buildView($view, $form, $options);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

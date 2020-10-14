@@ -24,7 +24,6 @@ jQuery(function () {
     $("form[name=add-translation]").submit(function () {
         let targetLang = $("select[name=add-translation\\[language\\]]").val();
         let sourceLang = $("select[name=add-translation\\[base_language\\]]").val();
-        console.log(targetLang, sourceLang);
         let mapping = $container.data('languages-mapping');
         let $serviceSelector = $("#add-translation_translatorAlias");
         let serviceAlias = $serviceSelector.val();
