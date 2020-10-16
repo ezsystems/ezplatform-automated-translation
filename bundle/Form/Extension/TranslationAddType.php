@@ -16,7 +16,6 @@ use EzSystems\EzPlatformAutomatedTranslationBundle\Form\TranslationAddDataTransf
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -98,25 +97,23 @@ class TranslationAddType extends AbstractTypeExtension
         $builder->addModelTransformer(new TranslationAddDataTransformer());
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options): void
+    public function buildView(FormView $view, FormInterface $form, array $options)
     {
         // let's pass to the template/form the possible language
         $map = [];
 
         $fillMap = function ($key, &$map) use ($form) {
             $languages = $form->get($key);
-            foreach ($languages as $language) {
-                /** @var Form $language */
-                /** @var FormBuilderInterface $config */
-                $config = $language->getConfig();
-                $lang = $config->getOption('value');
+            $choices = $languages->getConfig()->getAttribute('choice_list')->getChoices();
+            /** @var \eZ\Publish\API\Repository\Values\Content\Language $language */
+            foreach ($choices as $language) {
                 foreach ($this->clientProvider->getClients() as $client) {
-                    $posix = $this->localeConverter->convertToPOSIX($lang);
+                    $posix = $this->localeConverter->convertToPOSIX($language->languageCode);
                     if (null === $posix) {
                         continue;
                     }
                     if ($client->supportsLanguage($posix)) {
-                        $map[$client->getServiceAlias()][] = $lang;
+                        $map[$client->getServiceAlias()][] = $language->languageCode;
                     }
                 }
             }
@@ -131,9 +128,6 @@ class TranslationAddType extends AbstractTypeExtension
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(
-            [
-            ]
-        );
+        $resolver->setDefaults([]);
     }
 }

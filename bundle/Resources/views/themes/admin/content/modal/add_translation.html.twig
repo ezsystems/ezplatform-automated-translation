@@ -16,20 +16,33 @@
                 </button>
             </div>
             <div class="modal-body">
-                <span class="ez-translation__title">{{ 'tab.translations.add.language'|trans|desc('Select a language for the new translation') }}</span>
-                {{ form_widget(form.language, {'attr': {'class': 'ez-translation__language-wrapper'}}) }}
-                <span class="ez-translation__title">{{ 'tab.translations.add.base_language'|trans|desc('Base this translation on an existing translation') }}</span>
-                {{ form_widget(form.base_language, {'attr': {'class': 'ez-translation__language-wrapper'}}) }}
+                <div class="ez-translation__title">{{ 'tab.translations.add.language'|trans|desc('Select a language for the new translation') }}</div>
+                {{ form_widget(form.language, {'attr': {'hidden': 'hidden', 'class': 'ez-translation__language-wrapper ez-translation__language-wrapper--language'}}) }}
+                {% include '@ezdesign/ui/component/custom_dropdown.html.twig' with {
+                    choices: form.language.vars.choices,
+                    value: form.language.vars.value,
+                    source_selector: '.ez-translation__language-wrapper--language',
+                    choice_translation_domain: false
+                } %}
+
+                <div class="ez-translation__title mt-4">{{ 'tab.translations.add.base_language'|trans|desc('Base this translation on an existing translation') }}</div>
+                {{ form_widget(form.base_language, {'attr': {'hidden': 'hidden', 'class': 'ez-translation__language-wrapper ez-translation__language-wrapper--base-language'}}) }}
+                {% include '@ezdesign/ui/component/custom_dropdown.html.twig' with {
+                    choices: form.base_language.vars.choices,
+                    value: form.base_language.vars.value,
+                    source_selector: '.ez-translation__language-wrapper--base-language',
+                    choice_translation_domain: false
+                } %}
 
                 {% include '@ezdesign/content/remote_translate_form_fields.html.twig' %}
             </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-dark" data-dismiss="modal">
+            <div class="modal-footer">
+                {{ form_widget(form.add, {'attr': {'class': 'btn btn-primary ez-btn--create-translation', 'disabled': 'disabled'}}) }}
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
                     {{ 'tab.translations.add.cancel'|trans|desc('Cancel') }}
                 </button>
-                {{ form_widget(form.add, {'attr': {'class': 'btn btn-primary ez-btn--wide ez-btn--create-translation', 'disabled': 'disabled'}}) }}
             </div>
-            {{ form_end(form) }}
         </div>
+        {{ form_end(form) }}
     </div>
 </div>
