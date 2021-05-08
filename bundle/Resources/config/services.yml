@@ -31,3 +31,5 @@ services:
             $localeList: '%ezpublish.locale.conversion_map%'
         tags:
             - { name: form.type_extension, extended_type: EzSystems\EzPlatformAdminUi\Form\Type\Language\LanguageCreateType }
+
+    EzSystems\EzPlatformAutomatedTranslationBundle\EventListener\ContentProxyTranslateListener: ~
