@@ -86,6 +86,7 @@ class ContentProxyTranslateListener implements EventSubscriberInterface
             ])
         );
 
+        $event->stopPropagation();
         $event->setResponse($response);
     }
 }
