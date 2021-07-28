@@ -1,11 +1,55 @@
 services:
     _defaults:
         autowire: true
-        public: false
         autoconfigure: true
+        public: false
 
-    EzSystems\EzPlatformAutomatedTranslation\:
-        resource: '../../../lib'
+    _instanceof:
+        EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\FieldEncoderInterface:
+            tags: [ 'ezplatform.automated_translation.field_encoder' ]
+
+        EzSystems\EzPlatformAutomatedTranslation\Encoder\BlockAttribute\BlockAttributeEncoderInterface:
+            tags: [ 'ezplatform.automated_translation.block_attribute_encoder' ]
+
+    # field encoder
+    EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\TextLineFieldEncoder: ~
+
+    EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\PageBuilderFieldEncoder:
+        arguments:
+            $blockAttributeEncoderManager: '@EzSystems\EzPlatformAutomatedTranslation\Encoder\BlockAttribute\BlockAttributeEncoderManager'
+            $blockDefinitionFactory: '@EzSystems\EzPlatformPageFieldType\FieldType\Page\Block\Definition\BlockDefinitionFactory'
+
+    EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\RichTextFieldEncoder:
+        arguments:
+            $richTextEncoder: '@EzSystems\EzPlatformAutomatedTranslation\Encoder\RichText\RichTextEncoder'
+
+    # field encoder manager
+    EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\FieldEncoderManager:
+        arguments:
+            $fieldEncoders: !tagged_iterator 'ezplatform.automated_translation.field_encoder'
+
+    # block attribute
+    EzSystems\EzPlatformAutomatedTranslation\Encoder\BlockAttribute\TextBlockAttributeEncoder: ~
+
+    EzSystems\EzPlatformAutomatedTranslation\Encoder\BlockAttribute\RichTextBlockAttributeEncoder:
+        arguments:
+            $richTextEncoder: '@EzSystems\EzPlatformAutomatedTranslation\Encoder\RichText\RichTextEncoder'
+
+    # block attribute encoder manager
+    EzSystems\EzPlatformAutomatedTranslation\Encoder\BlockAttribute\BlockAttributeEncoderManager:
+        arguments:
+            $blockAttributeEncoders: !tagged_iterator 'ezplatform.automated_translation.block_attribute_encoder'
+
+    # RichText encoder
+    EzSystems\EzPlatformAutomatedTranslation\Encoder\RichText\RichTextEncoder:
+        arguments:
+            $configResolver: '@ezpublish.config.resolver'
+
+    EzSystems\EzPlatformAutomatedTranslation\Encoder: ~
+
+    EzSystems\EzPlatformAutomatedTranslation\Translator: ~
+
+    EzSystems\EzPlatformAutomatedTranslation\TranslatorGuard: ~
 
     EzSystems\EzPlatformAutomatedTranslation\Client\:
         resource: '../../../lib/Client'

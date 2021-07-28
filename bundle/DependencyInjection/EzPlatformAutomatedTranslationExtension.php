@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace EzSystems\EzPlatformAutomatedTranslationBundle\DependencyInjection;
 
 use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\SiteAccessAware\ConfigurationProcessor;
+use EzSystems\EzPlatformAutomatedTranslation\Encoder\BlockAttribute\BlockAttributeEncoderInterface;
+use EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\FieldEncoderInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
@@ -27,6 +29,12 @@ class EzPlatformAutomatedTranslationExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         // always needed because of Bundle extension.
         $loader->load('services_override.yml');
+
+        $container->registerForAutoconfiguration(FieldEncoderInterface::class)
+            ->addTag('ezplatform.automated_translation.field_encoder');
+
+        $container->registerForAutoconfiguration(BlockAttributeEncoderInterface::class)
+            ->addTag('ezplatform.automated_translation.block_attribute_encoder');
 
         if (empty($config['system'])) {
             return;
