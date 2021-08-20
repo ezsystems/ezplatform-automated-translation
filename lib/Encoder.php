@@ -136,11 +136,11 @@ class Encoder
         $decodeArray = $encoder->decode($data, XmlEncoder::FORMAT);
         $results = [];
         foreach ($decodeArray as $fieldIdentifier => $xmlValue) {
-            $previousValue = $sourceContent->getField($fieldIdentifier)->value;
+            $previousFieldValue = $sourceContent->getField($fieldIdentifier)->value;
             $type = $xmlValue['@type'];
             $stringValue = $xmlValue['#'];
 
-            if (null === ($fieldValue = $this->decodeField($type, $stringValue, $previousValue))) {
+            if (null === ($fieldValue = $this->decodeField($type, $stringValue, $previousFieldValue))) {
                 continue;
             }
 
@@ -177,17 +177,17 @@ class Encoder
     }
 
     /**
-     * @param mixed $previousValue
+     * @param mixed $previousFieldValue
      */
-    private function decodeField(string $type, string $value, $previousValue): ?Value
+    private function decodeField(string $type, string $value, $previousFieldValue): ?Value
     {
         try {
-            $fieldValue = $this->fieldEncoderManager->decode($type, $value, $previousValue);
+            $fieldValue = $this->fieldEncoderManager->decode($type, $value, $previousFieldValue);
         } catch (InvalidArgumentException | EmptyTranslatedFieldException $e) {
             return null;
         }
 
-        $event = new FieldDecodeEvent($type, $fieldValue, $previousValue);
+        $event = new FieldDecodeEvent($type, $fieldValue, $previousFieldValue);
         $this->eventDispatcher->dispatch($event, Events::POST_FIELD_DECODE);
 
         return $event->getValue();

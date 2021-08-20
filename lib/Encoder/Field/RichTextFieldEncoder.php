@@ -36,11 +36,10 @@ final class RichTextFieldEncoder implements FieldEncoderInterface
 
     public function encode($field): string
     {
-        // we need to remove that to make it a good XML
         return $this->richTextEncoder->encode((string) $field->value);
     }
 
-    public function decode(string $value, $previousValue): Value
+    public function decode(string $value, $previousFieldValue): Value
     {
         $decodedValue = $this->richTextEncoder->decode($value);
 

@@ -12,6 +12,8 @@ use eZ\Publish\Core\MVC\ConfigResolverInterface;
 
 final class RichTextEncoder
 {
+    private const XML_MARKUP = '<?xml version="1.0" encoding="UTF-8"?>';
+
     /**
      * Allow to replace characters preserve eZ RichText Content.
      *
@@ -62,7 +64,10 @@ final class RichTextEncoder
 
     public function encode(string $xmlString): string
     {
-        $xmlString = substr($xmlString, strpos($xmlString, '>') + 1);
+        if (strpos($xmlString, self::XML_MARKUP) !== false) {
+            $xmlString = substr($xmlString, strpos($xmlString, '>') + 1);
+        }
+
         $xmlString = $this->encodeNonTranslatableCharacters($xmlString);
         foreach ($this->nonTranslatableTags as $tag) {
             $xmlString = preg_replace_callback(

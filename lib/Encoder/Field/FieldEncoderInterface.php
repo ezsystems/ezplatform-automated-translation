@@ -20,7 +20,7 @@ interface FieldEncoderInterface
     public function encode(Field $field): string;
 
     /**
-     * @param mixed $previousValue
+     * @param mixed $previousFieldValue
      */
-    public function decode(string $value, $previousValue): Value;
+    public function decode(string $value, $previousFieldValue): Value;
 }

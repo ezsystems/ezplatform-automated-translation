@@ -30,7 +30,7 @@ final class TextLineFieldEncoder implements FieldEncoderInterface
         return (string) $field->value;
     }
 
-    public function decode(string $value, $previousValue): Value
+    public function decode(string $value, $previousFieldValue): Value
     {
         $value = trim($value);
 

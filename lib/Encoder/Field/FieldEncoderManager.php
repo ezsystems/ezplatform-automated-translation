@@ -42,16 +42,16 @@ final class FieldEncoderManager
     }
 
     /**
-     * @param mixed $previousValue
+     * @param mixed $previousFieldValue
      *
      * @throws \InvalidArgumentException
      * @throws \EzSystems\EzPlatformAutomatedTranslation\Exception\EmptyTranslatedFieldException
      */
-    public function decode(string $type, string $value, $previousValue): Value
+    public function decode(string $type, string $value, $previousFieldValue): Value
     {
         foreach ($this->fieldEncoders as $fieldEncoder) {
             if ($fieldEncoder->canDecode($type)) {
-                return $fieldEncoder->decode($value, $previousValue);
+                return $fieldEncoder->decode($value, $previousFieldValue);
             }
         }
 

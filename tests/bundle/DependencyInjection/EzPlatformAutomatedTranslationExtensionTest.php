@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\EzPlatformDesignEngineBundle\Tests\DependencyInjection;
+namespace EzSystems\EzPlatformAutomatedTranslationBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
 use EzSystems\EzPlatformAutomatedTranslationBundle\DependencyInjection\EzPlatformAutomatedTranslationExtension;

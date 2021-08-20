@@ -92,7 +92,7 @@ final class PageBuilderFieldEncoder implements FieldEncoderInterface
         return (string) $payload;
     }
 
-    public function decode(string $value, $previousValue): APIValue
+    public function decode(string $value, $previousFieldValue): APIValue
     {
         $encoder = new XmlEncoder();
         $data = str_replace(
@@ -101,8 +101,8 @@ final class PageBuilderFieldEncoder implements FieldEncoderInterface
             $value
         );
 
-        /** @var Value $previousValue */
-        $page = clone $previousValue->getPage();
+        /** @var Value $previousFieldValue */
+        $page = clone $previousFieldValue->getPage();
         $decodeArray = $encoder->decode($data, XmlEncoder::FORMAT);
 
         foreach ($decodeArray as $blockId => $xmlValue) {
