@@ -57,7 +57,14 @@ final class RichTextEncoder
         );
 
         $this->nonTranslatableTags = ['ezvalue', 'ezconfig', 'ezembed'] + $tags;
-        $this->nonTranslatableCharactersHashMap = ["\n" => 'XXXEOLXXX'] + $chars;
+        $this->nonTranslatableCharactersHashMap = [
+                "\n" => 'XXXEOLXXX',
+                '<section xmlns="http://docbook.org/ns/docbook"'
+                . ' xmlns:xlink="http://www.w3.org/1999/xlink"'
+                . ' xmlns:ezxhtml="http://ez.no/xmlns/ezpublish/docbook/xhtml"'
+                . ' xmlns:ezcustom="http://ez.no/xmlns/ezpublish/docbook/custom"'
+                . ' version="5.0-variant ezpublish-1.0">' => '<section ATTR1>',
+            ] + $chars;
         $this->nonValidAttributeTags = ['title'] + $attributes;
         $this->placeHolderMap = [];
     }
