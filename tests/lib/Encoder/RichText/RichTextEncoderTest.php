@@ -29,7 +29,7 @@ class RichTextEncoderTest extends TestCase
             ->expects($this->at(0))
             ->method('getParameter')
             ->with(
-                $this->equalTo('nontranslatabletags'),
+                $this->equalTo('non_translatable_tags'),
                 $this->equalTo('ez_platform_automated_translation')
             )
             ->willReturn([]);
@@ -38,7 +38,7 @@ class RichTextEncoderTest extends TestCase
             ->expects($this->at(1))
             ->method('getParameter')
             ->with(
-                $this->equalTo('nontranslatablecharacters'),
+                $this->equalTo('non_translatable_self_closed_tags'),
                 $this->equalTo('ez_platform_automated_translation')
             )
             ->willReturn([]);
@@ -47,7 +47,16 @@ class RichTextEncoderTest extends TestCase
             ->expects($this->at(2))
             ->method('getParameter')
             ->with(
-                $this->equalTo('nonnalidattributetags'),
+                $this->equalTo('non_translatable_characters'),
+                $this->equalTo('ez_platform_automated_translation')
+            )
+            ->willReturn([]);
+
+        $this->configResolver
+            ->expects($this->at(3))
+            ->method('getParameter')
+            ->with(
+                $this->equalTo('non_valid_attribute_tags'),
                 $this->equalTo('ez_platform_automated_translation')
             )
             ->willReturn([]);
@@ -83,6 +92,25 @@ class RichTextEncoderTest extends TestCase
         $this->assertEquals($expected, $encodeResult . "\n");
 
         $decodeResult = $subject->decode($encodeResult);
+
+        $this->assertEquals($xml1, $decodeResult);
+    }
+
+    public function testEncodeAndDecodeRichtextExtended()
+    {
+        $xml1 = $this->getFixture('testEncodeRichText_input.xml');
+
+        $subject = new RichTextEncoder($this->configResolver);
+
+        $encodeResult = $subject->encode($xml1);
+
+        $expected = $this->getFixture('testEncodeRichText_input_encoded.xml');
+
+        $this->assertEquals(trim($expected), trim($encodeResult));
+
+        $decodeResult = $subject->decode($encodeResult);
+
+        $decodeResult = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . $decodeResult;
 
         $this->assertEquals($xml1, $decodeResult);
     }

@@ -97,7 +97,7 @@ final class PageBuilderFieldEncoder implements FieldEncoderInterface
         $encoder = new XmlEncoder();
         $data = str_replace(
             ['<' . self::CDATA_FAKER_TAG . '>', '</' . self::CDATA_FAKER_TAG . '>'],
-            ['<![CDATA[' . self::XML_MARKUP, ']]>'],
+            ['<![CDATA[', ']]>'],
             $value
         );
 

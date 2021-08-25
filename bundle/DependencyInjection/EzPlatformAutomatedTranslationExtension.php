@@ -50,9 +50,10 @@ class EzPlatformAutomatedTranslationExtension extends Extension
 
         $processor = new ConfigurationProcessor($container, $this->getAlias());
         $processor->mapSetting('configurations', $config);
-        $processor->mapSetting('nontranslatablecharacters', $config);
-        $processor->mapSetting('nontranslatabletags', $config);
-        $processor->mapSetting('nonnalidattributetags', $config);
+        $processor->mapSetting('non_translatable_characters', $config);
+        $processor->mapSetting('non_translatable_tags', $config);
+        $processor->mapSetting('non_translatable_self_closed_tags', $config);
+        $processor->mapSetting('non_valid_attribute_tags', $config);
     }
 
     private function hasConfiguredClients(array $config, ContainerBuilder $container): bool

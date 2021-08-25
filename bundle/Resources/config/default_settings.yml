@@ -1,6 +1,7 @@
 parameters:
     ez_platform_automated_translation.default.configurations: ~
-    ez_platform_automated_translation.default.nontranslatablecharacters: []
-    ez_platform_automated_translation.default.nontranslatabletags: []
-    ez_platform_automated_translation.default.nonnalidattributetags: []
+    ez_platform_automated_translation.default.non_translatable_characters: []
+    ez_platform_automated_translation.default.non_translatable_tags: []
+    ez_platform_automated_translation.default.non_translatable_self_closed_tags: []
+    ez_platform_automated_translation.default.non_valid_attribute_tags: []
 
