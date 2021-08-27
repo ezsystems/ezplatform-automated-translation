@@ -11,6 +11,7 @@ namespace EzSystems\EzPlatformAutomatedTranslation\Encoder\Field;
 use eZ\Publish\API\Repository\Values\Content\Field;
 use eZ\Publish\Core\FieldType\Value as APIValue;
 use EzSystems\EzPlatformAutomatedTranslation\Encoder\BlockAttribute\BlockAttributeEncoderManager;
+use EzSystems\EzPlatformAutomatedTranslation\Exception\EmptyTranslatedAttributeException;
 use EzSystems\EzPlatformPageFieldType\FieldType\LandingPage\Value;
 use EzSystems\EzPlatformPageFieldType\FieldType\Page\Block\Definition\BlockDefinitionFactory;
 use InvalidArgumentException;
@@ -141,7 +142,7 @@ final class PageBuilderFieldEncoder implements FieldEncoderInterface
     {
         try {
             $value = $this->blockAttributeEncoderManager->decode($type, $value);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException | EmptyTranslatedAttributeException $e) {
             return null;
         }
 

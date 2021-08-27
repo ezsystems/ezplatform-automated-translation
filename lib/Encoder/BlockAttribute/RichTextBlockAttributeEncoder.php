@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace EzSystems\EzPlatformAutomatedTranslation\Encoder\BlockAttribute;
 
 use EzSystems\EzPlatformAutomatedTranslation\Encoder\RichText\RichTextEncoder;
+use EzSystems\EzPlatformAutomatedTranslation\Exception\EmptyTranslatedAttributeException;
 
 class RichTextBlockAttributeEncoder implements BlockAttributeEncoderInterface
 {
@@ -40,6 +41,12 @@ class RichTextBlockAttributeEncoder implements BlockAttributeEncoderInterface
 
     public function decode(string $value): string
     {
-        return $this->richTextEncoder->decode($value);
+        $decodedValue = $this->richTextEncoder->decode($value);
+
+        if (strlen($decodedValue) === 0) {
+            throw new EmptyTranslatedAttributeException();
+        }
+
+        return $decodedValue;
     }
 }

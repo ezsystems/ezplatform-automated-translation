@@ -42,6 +42,9 @@ final class BlockAttributeEncoderManager
         );
     }
 
+    /**
+     * @throws \EzSystems\EzPlatformAutomatedTranslation\Exception\EmptyTranslatedAttributeException
+     */
     public function decode(string $type, string $value): string
     {
         foreach ($this->blockAttributeEncoders as $blockAttributeEncoder) {
