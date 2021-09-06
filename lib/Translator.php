@@ -65,7 +65,7 @@ class Translator
         $remoteService = $this->clientProvider->get($remoteServiceKey);
         $translatedPayload = $remoteService->translate($payload, $posixFrom, $posixTo);
 
-        return $this->encoder->decode($translatedPayload);
+        return $this->encoder->decode($translatedPayload, $sourceContent);
     }
 
     public function getTranslatedContent(string $from, string $to, string $remoteServiceKey, Content $content): Content

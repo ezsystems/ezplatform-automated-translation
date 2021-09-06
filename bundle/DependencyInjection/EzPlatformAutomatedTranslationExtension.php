@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace EzSystems\EzPlatformAutomatedTranslationBundle\DependencyInjection;
 
 use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\SiteAccessAware\ConfigurationProcessor;
+use EzSystems\EzPlatformAutomatedTranslation\Encoder\BlockAttribute\BlockAttributeEncoderInterface;
+use EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\FieldEncoderInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
@@ -28,6 +30,12 @@ class EzPlatformAutomatedTranslationExtension extends Extension
         // always needed because of Bundle extension.
         $loader->load('services_override.yml');
 
+        $container->registerForAutoconfiguration(FieldEncoderInterface::class)
+            ->addTag('ezplatform.automated_translation.field_encoder');
+
+        $container->registerForAutoconfiguration(BlockAttributeEncoderInterface::class)
+            ->addTag('ezplatform.automated_translation.block_attribute_encoder');
+
         if (empty($config['system'])) {
             return;
         }
@@ -42,9 +50,10 @@ class EzPlatformAutomatedTranslationExtension extends Extension
 
         $processor = new ConfigurationProcessor($container, $this->getAlias());
         $processor->mapSetting('configurations', $config);
-        $processor->mapSetting('nontranslatablecharacters', $config);
-        $processor->mapSetting('nontranslatabletags', $config);
-        $processor->mapSetting('nonnalidattributetags', $config);
+        $processor->mapSetting('non_translatable_characters', $config);
+        $processor->mapSetting('non_translatable_tags', $config);
+        $processor->mapSetting('non_translatable_self_closed_tags', $config);
+        $processor->mapSetting('non_valid_attribute_tags', $config);
     }
 
     private function hasConfiguredClients(array $config, ContainerBuilder $container): bool

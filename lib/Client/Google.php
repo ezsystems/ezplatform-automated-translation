@@ -11,12 +11,16 @@ namespace EzSystems\EzPlatformAutomatedTranslation\Client;
 use EzSystems\EzPlatformAutomatedTranslation\Exception\ClientNotConfiguredException;
 use EzSystems\EzPlatformAutomatedTranslation\Exception\InvalidLanguageCodeException;
 use GuzzleHttp\Client;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 
 /**
  * Class GoogleTranslate:.
  */
-class Google implements ClientInterface
+class Google implements ClientInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Google List of available code https://cloud.google.com/translate/docs/languages.
      */
@@ -52,6 +56,12 @@ class Google implements ClientInterface
 
     public function translate(string $payload, ?string $from, string $to): string
     {
+        $this->logger->info(sprintf(
+            'Calling %s for translated content (length %s)',
+            $this->getServiceFullName(),
+            strlen($payload)
+        ));
+
         $parameters = [
             'key' => $this->apiKey,
             'target' => $this->normalized($to),
@@ -73,8 +83,15 @@ class Google implements ClientInterface
         );
         $response = $http->post('/language/translate/v2', ['form_params' => $parameters]);
         $json = json_decode($response->getBody()->getContents());
+        $translatedText = $json->data->translations[0]->translatedText;
 
-        return $json->data->translations[0]->translatedText;
+        $this->logger->info(sprintf(
+            '%s has returned translated content (length %s)',
+            $this->getServiceFullName(),
+            strlen($translatedText)
+        ));
+
+        return $translatedText;
     }
 
     public function supportsLanguage(string $languageCode): bool

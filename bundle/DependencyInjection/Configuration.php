@@ -20,8 +20,9 @@ class Configuration extends SiteAccessAware\Configuration
         $systemNode = $this->generateScopeBaseNode($rootNode);
         $systemNode
             ->variableNode('configurations')->end()
-            ->arrayNode('nontranslatablecharacters')->end()
-            ->arrayNode('nontranslatabletags')->end();
+            ->arrayNode('non_translatable_characters')->end()
+            ->arrayNode('non_translatable_tags')->end()
+            ->arrayNode('non_translatable_self_closed_tags')->end();
 
         return $treeBuilder;
     }
