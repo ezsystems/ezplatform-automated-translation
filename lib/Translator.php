@@ -81,10 +81,14 @@ class Translator
         );
 
         foreach ($contentType->getFieldDefinitions() as $field) {
+            if (!$field->isTranslatable) {
+                continue;
+            }
+
             /** @var FieldDefinition $field */
             $fieldName = $field->identifier;
             $newValue = $translatedFields[$fieldName] ?? $content->getFieldValue($fieldName);
-            $contentUpdateStruct->setField($fieldName, $newValue);
+            $contentUpdateStruct->setField($fieldName, $newValue, $to);
         }
 
         return $this->contentService->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
