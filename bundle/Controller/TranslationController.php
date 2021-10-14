@@ -48,6 +48,8 @@ final class TranslationController extends Controller
             )
         );
 
+        // admin-ui v3.3.6 introduces different route `ibexa.content.translate_with_location.proxy`
+        // when translated content is created.
         $contentTranslateWithLocationPattern = str_replace(
             '/',
             '\/?',
@@ -66,13 +68,10 @@ final class TranslationController extends Controller
 
         $serviceAlias = $request->request->get('add-translation')['translatorAlias'] ?? '';
 
-        if ('' === $serviceAlias) {
-            return $response;
-        }
-
-        if (1 !== preg_match("#{$contentTranslatePattern}#", $targetUrl) &&
-            1 !== preg_match("#{$contentTranslateWithLocationPattern}#", $targetUrl)
-        ) {
+        if ('' === $serviceAlias || (
+            !$this->targetUrlContainsPattern($targetUrl, $contentTranslatePattern) &&
+            !$this->targetUrlContainsPattern($targetUrl, $contentTranslateWithLocationPattern)
+        )) {
             return $response;
         }
 
@@ -84,5 +83,10 @@ final class TranslationController extends Controller
     public function removeAction(Request $request): Response
     {
         return $this->translationController->removeAction($request);
+    }
+
+    private function targetUrlContainsPattern(string $targetUrl, string $pattern): bool
+    {
+        return 1 === preg_match("#{$pattern}#", $targetUrl);
     }
 }
