@@ -27,11 +27,13 @@ final class TranslationController extends Controller
     public function addAction(Request $request): Response
     {
         $response = $this->translationController->addAction($request);
+
         if (!$response instanceof RedirectResponse) {
             return $response;
         }
+
         $targetUrl = $response->getTargetUrl();
-        $pattern = str_replace(
+        $contentTranslatePattern = str_replace(
             '/',
             '\/?',
             urldecode(
@@ -45,10 +47,34 @@ final class TranslationController extends Controller
                 )
             )
         );
+
+        // admin-ui v3.3.6 introduces different route `ibexa.content.translate_with_location.proxy`
+        // when translated content is created.
+        $contentTranslateWithLocationPattern = str_replace(
+            '/',
+            '\/?',
+            urldecode(
+                $this->generateUrl(
+                    'ibexa.content.translate_with_location.proxy',
+                    [
+                        'contentId' => '([0-9]*)',
+                        'fromLanguageCode' => '([a-zA-Z-]*)',
+                        'toLanguageCode' => '([a-zA-Z-]*)',
+                        'locationId' => '([0-9]*)',
+                    ]
+                )
+            )
+        );
+
         $serviceAlias = $request->request->get('add-translation')['translatorAlias'] ?? '';
-        if ('' === $serviceAlias || 1 !== preg_match("#{$pattern}#", $targetUrl)) {
+
+        if ('' === $serviceAlias || (
+            !$this->targetUrlContainsPattern($targetUrl, $contentTranslatePattern) &&
+            !$this->targetUrlContainsPattern($targetUrl, $contentTranslateWithLocationPattern)
+        )) {
             return $response;
         }
+
         $response->setTargetUrl(sprintf('%s?translatorAlias=%s', $targetUrl, $serviceAlias));
 
         return $response;
@@ -57,5 +83,10 @@ final class TranslationController extends Controller
     public function removeAction(Request $request): Response
     {
         return $this->translationController->removeAction($request);
+    }
+
+    private function targetUrlContainsPattern(string $targetUrl, string $pattern): bool
+    {
+        return 1 === preg_match("#{$pattern}#", $targetUrl);
     }
 }
