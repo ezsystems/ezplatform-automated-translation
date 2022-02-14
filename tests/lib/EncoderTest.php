@@ -24,7 +24,7 @@ class EncoderTest extends TestCase
     /** @var \PHPUnit_Framework_MockObject_MockObject|\eZ\Publish\Core\MVC\ConfigResolverInterface */
     private $configResolver;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
