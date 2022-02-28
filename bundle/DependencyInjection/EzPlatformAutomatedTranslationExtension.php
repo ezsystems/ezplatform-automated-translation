@@ -25,6 +25,9 @@ class EzPlatformAutomatedTranslationExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
+        if (empty($config['system'])) {
+            return;
+        }
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         // always needed because of Bundle extension.
@@ -35,10 +38,6 @@ class EzPlatformAutomatedTranslationExtension extends Extension
 
         $container->registerForAutoconfiguration(BlockAttributeEncoderInterface::class)
             ->addTag('ezplatform.automated_translation.block_attribute_encoder');
-
-        if (empty($config['system'])) {
-            return;
-        }
 
         if (!$this->hasConfiguredClients($config, $container)) {
             return;
