@@ -51,7 +51,7 @@ class ContentProxyTranslateListener implements EventSubscriberInterface
 
     public function translate(ContentProxyTranslateEvent $event): void
     {
-        $request = $this->requestStack->getMasterRequest();
+        $request = $this->requestStack->getMainRequest();
 
         if (null === $request) {
             return;
