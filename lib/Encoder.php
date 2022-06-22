@@ -192,6 +192,9 @@ class Encoder
             if (RichTextValue::class === $type) {
                 $value = $this->richTextDecode($value);
             }
+            if (EzSystems\EzPlatformRichText\eZ\FieldType\RichText\Value::class === $type) {
+                $value = $this->richTextDecode($value);
+            }
             $trimmedValue = trim($value);
             if ('' === $trimmedValue) {
                 continue;
