@@ -33,11 +33,12 @@ class TranslationController extends BaseTranslationController
         }
 
         $targetUrl    = $response->getTargetUrl();
-        $pattern      = str_replace(
+        $pattern1      = str_replace(
             '/',
             '\/?',
             urldecode(
                 $this->generateUrl(
+                // path: /content/{contentId}/translate/{toLanguageCode}/{fromLanguageCode}
                     'ezplatform.content.translate',
                     [
                         'contentId'        => '([0-9]*)',
@@ -47,12 +48,30 @@ class TranslationController extends BaseTranslationController
                 )
             )
         );
+        $pattern2      = str_replace(
+            '/',
+            '\/?',
+            urldecode(
+                $this->generateUrl(
+                // path: /content/{contentId}/location/{locationId}/translate/{toLanguageCode}/{fromLanguageCode}
+                    'ibexa.content.translate_with_location',
+                    [
+                        'contentId'        => '([0-9]*)',
+                        'locationId'         => '([0-9]*)',
+                        'fromLanguageCode' => '([a-zA-Z-]*)',
+                        'toLanguageCode'   => '([a-zA-Z-]*)',
+                    ]
+                )
+            )
+        );
         $serviceAlias = $request->request->get('add-translation')['translatorAlias'] ?? '';
-        if (1 !== preg_match("#{$pattern}#", $targetUrl) || '' === $serviceAlias) {
+        $match1 = preg_match("#{$pattern1}#", $targetUrl);
+        $match2 = preg_match("#{$pattern2}#", $targetUrl);
+        $match = $match1 + $match2;
+        if (0 === $match || '' === $serviceAlias) {
             return $response;
         }
         $response->setTargetUrl(sprintf('%s?translatorAlias=%s', $targetUrl, $serviceAlias));
-
         return $response;
     }
 }
