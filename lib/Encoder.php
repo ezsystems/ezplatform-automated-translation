@@ -157,6 +157,11 @@ class Encoder
                 $value                = $this->richTextEncode($field->value);
                 $results[$identifier] = ['#' => $value, '@type' => $type];
             }
+            if ($field->value instanceof \EzSystems\EzPlatformRichText\eZ\FieldType\RichText\Value) {
+                // we need to remove that to make it a good XML
+                $value                = $this->richTextEncode($field->value);
+                $results[$identifier] = ['#' => $value, '@type' => $type];
+            }
         }
 
         $encoder = new XmlEncoder();
@@ -192,7 +197,7 @@ class Encoder
             if (RichTextValue::class === $type) {
                 $value = $this->richTextDecode($value);
             }
-            if (EzSystems\EzPlatformRichText\eZ\FieldType\RichText\Value::class === $type) {
+            if (\EzSystems\EzPlatformRichText\eZ\FieldType\RichText\Value::class === $type) {
                 $value = $this->richTextDecode($value);
             }
             $trimmedValue = trim($value);
