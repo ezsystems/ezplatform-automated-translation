@@ -159,6 +159,7 @@ class Encoder
             }
             if ($field->value instanceof \EzSystems\EzPlatformRichText\eZ\FieldType\RichText\Value) {
                 // we need to remove that to make it a good XML
+                //
                 $value                = $this->richTextEncode($field->value);
                 $results[$identifier] = ['#' => $value, '@type' => $type];
             }
