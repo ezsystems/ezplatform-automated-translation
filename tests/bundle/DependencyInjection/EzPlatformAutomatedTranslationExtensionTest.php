@@ -1,63 +1,58 @@
 <?php
+
 /**
- * eZ Platform Automated Translation Bundle.
- *
- * @package   EzSystems\EzPlatformAutomatedTranslationBundle
- *
- * @author    Novactive <s.morel@novactive.com>
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
- * @license   For full copyright and license information view LICENSE file distributed with this source code.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
 declare(strict_types=1);
 
-namespace EzSystems\EzPlatformDesignEngineBundle\Tests\DependencyInjection;
+namespace EzSystems\EzPlatformAutomatedTranslationBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
-use \Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use \EzSystems\EzPlatformAutomatedTranslationBundle\DependencyInjection\EzPlatformAutomatedTranslationExtension;
+use EzSystems\EzPlatformAutomatedTranslationBundle\DependencyInjection\EzPlatformAutomatedTranslationExtension;
 
 class EzPlatformAutomatedTranslationExtensionTest extends TestCase
 {
     public function clientConfigurationDataProvider()
     {
         return [
-            #set 1
+            //set 1
             [['system' => ['default' => ['configurations' => []]]], false],
-            #set 2
+            //set 2
             [['system' => ['default' => ['configurations' => [
-                'client1' => ['key1' => 'value1']
+                'client1' => ['key1' => 'value1'],
             ]]]], true],
-            #set 3
+            //set 3
             [['system' => ['default' => ['configurations' => [
                 'client1' => [
                     'key1' => 'value1',
-                    'key2' => 'value2'
+                    'key2' => 'value2',
                 ],
             ]]]], true],
-            #set 3
+            //set 3
             [['system' => ['default' => ['configurations' => [
                 'client1' => [
                     'key1' => 'value1',
-                    'key2' => 'valueX'
+                    'key2' => 'valueX',
                 ],
                 'client2' => [
                     'key3' => 'value2',
-                    'key2' => 'valueY'
+                    'key2' => 'valueY',
                 ],
             ]]]], true],
-            #set 4
+            //set 4
             [['system' => ['default' => ['configurations' => [
                 'client1' => [
                     'key1' => 'value1',
-                    'key2' => 'valueX'
+                    'key2' => 'valueX',
                 ],
                 'client2' => [
                     'key3' => 'value2',
-                    'key2' => 'valueY'
+                    'key2' => 'valueY',
                 ],
                 'client3' => [
                     'key1' => 'ENV_TEST1',
-                    'key2' => 'valueX'
+                    'key2' => 'valueX',
                 ],
             ]]]], true],
         ];

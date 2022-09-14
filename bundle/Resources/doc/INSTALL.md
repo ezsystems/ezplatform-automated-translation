@@ -9,23 +9,19 @@
 
 Run `composer require ezsystems/ezplatform-automated-translation` to install the bundle and its dependencies:
 
-### Register the bundle
+### Change bundle's position in the configuration
 
-Activate the bundle in `app\AppKernel.php` file.
+The new bundle is automatically enabled in the configuration thanks to Flex. Even though, it's important and required to move `EzSystems\EzPlatformAutomatedTranslationBundle\EzPlatformAutomatedTranslationBundle::class => ['all' => true]` before `EzSystems\EzPlatformAdminUiBundle\EzPlatformAdminUiBundle::class => ['all' => true],` due to the templates loading order.
 
 ```php
-// app\AppKernel.php
+<?php
 
-public function registerBundles()
-{
-   ...
-   $bundles = array(
-       new FrameworkBundle(),
-       ...
-       // eZ Platform Automated Translation Bundle
-       new EzSystems\EzPlatformAutomatedTranslationBundle\EzPlatformAutomatedTranslationBundle()
-   );
-   ...
-}
+return [
+    ...
+    EzSystems\EzPlatformAutomatedTranslationBundle\EzPlatformAutomatedTranslationBundle::class => ['all' => true],
+    EzSystems\EzPlatformAdminUiBundle\EzPlatformAdminUiBundle::class => ['all' => true],
+    ...
+];
 ```
+
 

@@ -1,22 +1,24 @@
 <?php
+
 /**
- * eZ Automated Translation Bundle.
- *
- * @package   EzSystems\eZAutomatedTranslationBundle
- *
- * @author    Novactive <s.morel@novactive.com>
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
- * @license   For full copyright and license information view LICENSE file distributed with this source code.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
 declare(strict_types=1);
 
 namespace EzSystems\EzPlatformAutomatedTranslation;
 
-use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\ConfigResolver;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\Values\Content\Content;
-use eZ\Publish\Core\FieldType\RichText\Value as RichTextValue;
-use eZ\Publish\Core\FieldType\TextLine\Value as TextLineValue;
+use eZ\Publish\API\Repository\Values\Content\Field;
+use eZ\Publish\Core\FieldType\Value;
+use eZ\Publish\SPI\FieldType\Value as SPIValue;
+use EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\FieldEncoderManager;
+use EzSystems\EzPlatformAutomatedTranslation\Exception\EmptyTranslatedFieldException;
+use EzSystems\EzPlatformAutomatedTranslationBundle\Event\FieldDecodeEvent;
+use EzSystems\EzPlatformAutomatedTranslationBundle\Event\FieldEncodeEvent;
+use EzSystems\EzPlatformAutomatedTranslationBundle\Events;
+use InvalidArgumentException;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 
 /**
@@ -70,223 +72,111 @@ class Encoder
 
     private const XML_MARKUP = '<?xml version="1.0" encoding="UTF-8"?>';
 
-    /**
-     * Allow to replace characters preserve eZ RichText Content.
-     *
-     * @var array
-     */
-    private $nonTranslatableCharactersHashMap;
-
-    /**
-     * Everything inside these tags must be preserve from translation.
-     *
-     * @var array
-     */
-    private $nonTranslatableTags;
-
-    /**
-     * Every attributes inside these tags must be preserve from translation.
-     *
-     * @var array
-     */
-    private $nonValidAttributeTags;
-
-    /**
-     * @var ContentTypeService
-     */
+    /** @var ContentTypeService */
     private $contentTypeService;
 
-    /**
-     * @var array
-     */
-    private $placeHolderMap;
+    /** @var \EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\FieldEncoderManager */
+    private $fieldEncoderManager;
 
-    /**
-     * Encoder constructor.
-     *
-     * @param ContentTypeService $contentTypeService
-     * @param ConfigResolver     $configResolver
-     */
-    public function __construct(ContentTypeService $contentTypeService, ConfigResolver $configResolver)
-    {
+    public function __construct(
+        ContentTypeService $contentTypeService,
+        FieldEncoderManager $fieldEncoderManager
+    ) {
         $this->contentTypeService = $contentTypeService;
-        $this->placeHolderMap     = [];
-        $tags                     = $configResolver->getParameter(
-            'nontranslatabletags',
-            'ez_platform_automated_translation'
-        );
-        $chars                    = $configResolver->getParameter(
-            'nontranslatablecharacters',
-            'ez_platform_automated_translation'
-        );
-
-        $attributes = $configResolver->getParameter(
-            'nonnalidattributetags',
-            'ez_platform_automated_translation'
-        );
-
-        $this->nonTranslatableTags              = ['ezembed'] + $tags;
-        $this->nonTranslatableCharactersHashMap = ["\n" => 'XXXEOLXXX'] + $chars;
-        $this->nonValidAttributeTags            = ['title'] + $attributes;
+        $this->fieldEncoderManager = $fieldEncoderManager;
     }
 
-    /**
-     * @param Content $content
-     *
-     * @return string
-     */
     public function encode(Content $content): string
     {
-        $results     = [];
+        $results = [];
         $contentType = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId);
         foreach ($content->getFields() as $field) {
-            $identifier      = $field->fieldDefIdentifier;
+            $identifier = $field->fieldDefIdentifier;
             $fieldDefinition = $contentType->getFieldDefinition($identifier);
             if (!$fieldDefinition->isTranslatable) {
                 continue;
             }
             $type = \get_class($field->value);
-            // Note that TextBlock is a TextLine
-            if ($field->value instanceof TextLineValue) {
-                $value                = (string) $field->value;
-                $results[$identifier] = ['#' => $value, '@type' => $type];
+
+            if (null === ($value = $this->encodeField($field))) {
                 continue;
             }
-            if ($field->value instanceof RichTextValue) {
-                // we need to remove that to make it a good XML
-                $value                = $this->richTextEncode($field->value);
-                $results[$identifier] = ['#' => $value, '@type' => $type];
-            }
-            if ($field->value instanceof \EzSystems\EzPlatformRichText\eZ\FieldType\RichText\Value) {
-                // we need to remove that to make it a good XML
-                //
-                $value                = $this->richTextEncode($field->value);
-                $results[$identifier] = ['#' => $value, '@type' => $type];
-            }
+
+            $results[$identifier] = [
+                '#' => $value,
+                '@type' => $type,
+            ];
         }
 
         $encoder = new XmlEncoder();
         $payload = $encoder->encode($results, XmlEncoder::FORMAT);
+
+//        dump($payload);
+
         // here Encoder has  decorated with CDATA, we don't want the CDATA
-        $payload = str_replace(
+        return str_replace(
             ['<![CDATA[', ']]>'],
             ['<' . self::CDATA_FAKER_TAG . '>', '</' . self::CDATA_FAKER_TAG . '>'],
             $payload
         );
-
-        return $payload;
     }
 
-    /**
-     * @param string $xml
-     *
-     * @return array
-     */
-    public function decode(string $xml): array
+    public function decode(string $xml, Content $sourceContent): array
     {
-        $encoder     = new XmlEncoder();
-        $data        = str_replace(
+        $encoder = new XmlEncoder();
+        $data = str_replace(
             ['<' . self::CDATA_FAKER_TAG . '>', '</' . self::CDATA_FAKER_TAG . '>'],
             ['<![CDATA[' . self::XML_MARKUP, ']]>'],
             $xml
         );
+
         $decodeArray = $encoder->decode($data, XmlEncoder::FORMAT);
-        $results     = [];
+        $results = [];
         foreach ($decodeArray as $fieldIdentifier => $xmlValue) {
-            $type  = $xmlValue['@type'];
-            $value = $xmlValue['#'];
-            if (RichTextValue::class === $type) {
-                $value = $this->richTextDecode($value);
-            }
-            if (\EzSystems\EzPlatformRichText\eZ\FieldType\RichText\Value::class === $type) {
-                $value = $this->richTextDecode($value);
-            }
-            $trimmedValue = trim($value);
-            if ('' === $trimmedValue) {
+            $previousFieldValue = $sourceContent->getField($fieldIdentifier)->value;
+            $type = $xmlValue['@type'];
+            $stringValue = $xmlValue['#'];
+
+            if (null === ($fieldValue = $this->decodeField($type, $stringValue, $previousFieldValue))) {
                 continue;
             }
-            $results[$fieldIdentifier] = new $type($trimmedValue);
+
+            if (!in_array(SPIValue::class, class_implements($type))) {
+                throw new InvalidArgumentException(sprintf(
+                    'Unable to instantiate class %s, it should implement %s', $type, SPIValue::class
+                ));
+            }
+
+            if (get_class($fieldValue) !== $type) {
+                throw new InvalidArgumentException(sprintf(
+                    'Decoded field class mismatch: expected %s, actual: %s', $type, get_class($fieldValue)
+                ));
+            }
+
+            $results[$fieldIdentifier] = $fieldValue;
         }
 
         return $results;
     }
 
-    /**
-     * @param RichTextValue $value
-     *
-     * @return string
-     */
-    public function richTextEncode(RichTextValue $value): string
+    private function encodeField(Field $field): ?string
     {
-        $xmlString = (string) $value;
-        $xmlString = substr($xmlString, strpos($xmlString, '>') + 1);
-        $xmlString = str_replace(
-            array_keys($this->nonTranslatableCharactersHashMap),
-            array_values($this->nonTranslatableCharactersHashMap),
-            $xmlString
-        );
-
-        foreach ($this->nonTranslatableTags as $tag) {
-            $xmlString = preg_replace_callback(
-                '#<' . $tag . '(.[^>]*)>(.*)</' . $tag . '>#uim',
-                function ($matches) use ($tag) {
-                    $hash                        = sha1($matches[0]);
-                    $this->placeHolderMap[$hash] = $matches[0];
-
-                    return "<{$tag}>{$hash}</{$tag}>";
-                },
-                $xmlString
-            );
+        try {
+            return $this->fieldEncoderManager->encode($field);
+        } catch (InvalidArgumentException $e) {
+            return null;
         }
-        foreach ($this->nonValidAttributeTags as $tag) {
-            $xmlString = preg_replace_callback(
-                '#<' . $tag . '(.[^>]*)>#uim',
-                function ($matches) use ($tag) {
-                    $hash                        = sha1($matches[0]);
-                    $this->placeHolderMap[$hash] = $matches[0];
-
-                    return "<fake{$tag} {$hash}>";
-                },
-                $xmlString
-            );
-            $xmlString = str_replace("</{$tag}>", "</fake{$tag}>", $xmlString);
-        }
-
-        return $xmlString;
     }
 
     /**
-     * @param string $value
-     *
-     * @return string
+     * @param mixed $previousFieldValue
      */
-    public function richTextDecode(string $value): string
+    private function decodeField(string $type, string $value, $previousFieldValue): ?Value
     {
-        $value = str_replace(
-            array_values($this->nonTranslatableCharactersHashMap),
-            array_keys($this->nonTranslatableCharactersHashMap),
-            $value
-        );
-        foreach ($this->nonTranslatableTags as $tag) {
-            $value = preg_replace_callback(
-                '#<' . $tag . '>(.*)</' . $tag . '>#uim',
-                function ($matches) {
-                    return $this->placeHolderMap[trim($matches[1])];
-                },
-                $value
-            );
+        try {
+            return $this->fieldEncoderManager->decode($type, $value, $previousFieldValue);
+        } catch (InvalidArgumentException | EmptyTranslatedFieldException $e) {
+            return null;
         }
-        foreach ($this->nonValidAttributeTags as $tag) {
-            $value = preg_replace_callback(
-                '#<fake' . $tag . '(.[^>]*)>#uim',
-                function ($matches) {
-                    return $this->placeHolderMap[trim($matches[1])];
-                },
-                $value
-            );
-            $value = str_replace("</fake{$tag}>", "</{$tag}>", $value);
-        }
-
-        return $value;
     }
 }

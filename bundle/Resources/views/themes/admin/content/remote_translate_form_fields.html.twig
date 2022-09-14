@@ -1,0 +1,35 @@
+{% if form.vars.autotranslated_data is defined %}
+    <div class="ezautomatedtranslation-services-container" data-languages-mapping="{{ form.vars.autotranslated_data|json_encode|e('html_attr') }}">
+        {% if  form.translatorAlias.vars.choices is defined %}
+            {# that is a select - then multiple providers #}
+            <span class="ez-translation__title">{{ 'tab.translations.remote.translation.service'|trans()|desc('Use automatic translation') }}</span>
+            <br/>
+            {{ form_widget(form.translatorAlias) }}
+        {% else %}
+            {# that is a checkbox - then one provider #}
+            <span class="ez-translation__title">{{ 'tab.translations.remote.translation.service.with'|trans({"%alias%":form.translatorAlias.vars.label})|desc('Use automatic translation with %s') }}</span>
+            <div class="ez-field-edit ez-field-edit--ezboolean">
+                <div class="ez-field-edit__data">
+                    <div class="ez-data-source">
+                        <label class="ez-data-source__label {% if form.translatorAlias.vars.checked %} is-checked {% endif %}">
+                            <span class="ez-data-source__indicator"></span>
+                            <input {% if form.translatorAlias.vars.checked %} checked="checked" {% endif %}
+                                    type="checkbox" id="{{ form.translatorAlias.vars.id }}"
+                                    name="{{ form.translatorAlias.vars.full_name }}"
+                                    class="ez-data-source__input" value="{{ form.translatorAlias.vars.value }}"
+                            />
+                        </label>
+                        <div class="ezautomatedtranslation-error alert alert-info ez-alert ez-alert--info invisible" role="alert">
+                            <svg class="ez-icon ez-icon--small ez-icon-warning">
+                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/bundles/ezplatformadminui/img/ez-icons.svg#warning"></use>
+                            </svg>
+                            {{ "Automatic translation is not setup for this language. Please contact the website administrator"|trans()|desc("Automatic translation is not setup for this language") }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% do form.translatorAlias.setRendered %}
+        {% endif %}
+    </div>
+{% endif %}

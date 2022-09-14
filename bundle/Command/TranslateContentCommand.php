@@ -1,19 +1,17 @@
 <?php
+
 /**
- * eZ Automated Translation Bundle.
- *
- * @package   EzSystems\eZAutomatedTranslationBundle
- *
- * @author    Novactive <s.morel@novactive.com>
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
- * @license   For full copyright and license information view LICENSE file distributed with this source code.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
 declare(strict_types=1);
 
 namespace EzSystems\EzPlatformAutomatedTranslationBundle\Command;
 
+use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\API\Repository\PermissionResolver;
+use eZ\Publish\API\Repository\UserService;
 use EzSystems\EzPlatformAutomatedTranslation\ClientProvider;
-use EzSystems\EzPlatformAutomatedTranslation\RepositoryAware;
 use EzSystems\EzPlatformAutomatedTranslation\Translator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -21,37 +19,41 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class TranslateContentCommand.
- */
-class TranslateContentCommand extends Command
+final class TranslateContentCommand extends Command
 {
-    use RepositoryAware;
-    /**
-     * @var Translator
-     */
+    private const ADMINISTRATOR_USER_ID = 14;
+
+    /** @var Translator */
     private $translator;
 
-    /**
-     * @var ClientProvider
-     */
+    /** @var ClientProvider */
     private $clientProvider;
 
-    /**
-     * TranslateContentCommand constructor.
-     *
-     * @param Translator $translator
-     */
-    public function __construct(Translator $translator, ClientProvider $clientProvider)
-    {
+    /** @var \eZ\Publish\API\Repository\ContentService */
+    private $contentService;
+
+    /** @var \eZ\Publish\API\Repository\PermissionResolver */
+    private $permissionResolver;
+
+    /** @var \eZ\Publish\API\Repository\UserService */
+    private $userService;
+
+    public function __construct(
+        Translator $translator,
+        ClientProvider $clientProvider,
+        ContentService $contentService,
+        PermissionResolver $permissionResolver,
+        UserService $userService
+    ) {
         $this->clientProvider = $clientProvider;
-        parent::__construct();
         $this->translator = $translator;
+        $this->contentService = $contentService;
+        $this->permissionResolver = $permissionResolver;
+        $this->userService = $userService;
+
+        parent::__construct();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure(): void
     {
         $this
@@ -69,31 +71,27 @@ class TranslateContentCommand extends Command
             ->addOption('to', '--to', InputOption::VALUE_REQUIRED, 'Target Language');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $contentId = (int) $input->getArgument('contentId');
-        $content   = $this->repository->getContentService()->loadContent($contentId);
-        $draft     = $this->translator->getTranslatedContent(
+        $content = $this->contentService->loadContent($contentId);
+        $draft = $this->translator->getTranslatedContent(
             $input->getOption('from'),
             $input->getOption('to'),
             $input->getArgument('service'),
             $content
         );
-        $this->repository->getContentService()->publishVersion($draft->versionInfo);
+        $this->contentService->publishVersion($draft->versionInfo);
         $output->writeln("Translation to {$contentId} Done.");
+
+        return Command::SUCCESS;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         parent::initialize($input, $output);
-        $this->repository->getPermissionResolver()->setCurrentUserReference(
-            $this->repository->getUserService()->loadUser(14)
+        $this->permissionResolver->setCurrentUserReference(
+            $this->userService->loadUser(self::ADMINISTRATOR_USER_ID)
         );
     }
 }
