@@ -13,6 +13,7 @@ services:
 
     # field encoder
     EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\TextLineFieldEncoder: ~
+    EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\TextBlockFieldEncoder: ~
 
     EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\PageBuilderFieldEncoder:
         arguments:
@@ -28,6 +29,7 @@ services:
         arguments:
             $fieldEncoders: #!tagged_iterator 'ezplatform.automated_translation.field_encoder'
                 - '@EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\TextLineFieldEncoder'
+                - '@EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\TextBlockFieldEncoder'
                 - '@EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\PageBuilderFieldEncoder'
                 - '@EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\RichTextFieldEncoder'
 
