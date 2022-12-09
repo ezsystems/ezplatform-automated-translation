@@ -136,8 +136,10 @@ class Encoder
             $previousFieldValue = $sourceContent->getField($fieldIdentifier)->value;
             $type = $xmlValue['@type'];
             $stringValue = $xmlValue['#'];
+            $fieldValue = $this->decodeField($type, $stringValue, $previousFieldValue);
 
-            if (null === ($fieldValue = $this->decodeField($type, $stringValue, $previousFieldValue))) {
+            if (null === $fieldValue) {
+                // TODO $this->logger
                 continue;
             }
 
@@ -176,6 +178,7 @@ class Encoder
         try {
             return $this->fieldEncoderManager->decode($type, $value, $previousFieldValue);
         } catch (InvalidArgumentException | EmptyTranslatedFieldException $e) {
+            // TODO dump($e->getMessage());
             return null;
         }
     }

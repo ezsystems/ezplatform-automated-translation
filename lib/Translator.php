@@ -63,6 +63,7 @@ class Translator
         $payload = $this->encoder->encode($sourceContent);
         $posixTo = $this->localeConverter->convertToPOSIX($to);
         $remoteService = $this->clientProvider->get($remoteServiceKey);
+
         $translatedPayload = $remoteService->translate($payload, $posixFrom, $posixTo);
 
         return $this->encoder->decode($translatedPayload, $sourceContent);
