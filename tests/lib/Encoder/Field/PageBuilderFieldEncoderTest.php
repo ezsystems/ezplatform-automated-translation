@@ -27,58 +27,57 @@ class PageBuilderFieldEncoderTest extends TestCase
 {
     public const ATTRIBUTE_VALUE = 'ibexa';
 
+    /** @var \PHPUnit\Framework\MockObject\MockBuilder|\EzSystems\EzPlatformAutomatedTranslation\Encoder\BlockAttribute\BlockAttributeEncoderManager */
+    private $blockAttributeEncoderManagerMock;
+
+    /** @var \PHPUnit\Framework\MockObject\MockBuilder|\EzSystems\EzPlatformPageFieldType\FieldType\Page\Block\Definition\BlockDefinitionFactory */
+    private $blockDefinitionFactoryMock;
+
+    public function setUp(): void {
+        parent::setUp();
+
+        $this->blockAttributeEncoderManagerMock = $this->createMock(BlockAttributeEncoderManager::class);
+        $this->blockDefinitionFactoryMock = $this->createMock(BlockDefinitionFactory::class);
+    }
+    
     public function testEncode(): void
     {
-        $blockAttributeEncoderManagerMock = $this->getMockBuilder(BlockAttributeEncoderManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $blockDefinitionFactoryMock = $this->getMockBuilder(BlockDefinitionFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $blockDefinitionFactoryMock
-            ->expects(self::atLeastOnce())
+        $this->blockDefinitionFactoryMock
             ->method('getBlockDefinition')
             ->withAnyParameters()
             ->willReturn($this->getBlockDefinition());
 
-        $blockAttributeEncoderManagerMock
-            ->expects(self::atLeastOnce())
+        $this->blockAttributeEncoderManagerMock
             ->method('encode')
             ->withAnyParameters()
             ->willReturn(self::ATTRIBUTE_VALUE);
 
         $field = $this->getLandingPageField();
-        $subject = new PageBuilderFieldEncoder($blockAttributeEncoderManagerMock, $blockDefinitionFactoryMock);
-
-        self::assertTrue($subject->canEncode($field));
+        $subject = new PageBuilderFieldEncoder($this->blockAttributeEncoderManagerMock, $this->blockDefinitionFactoryMock);
 
         $result = $subject->encode($field);
 
-        self::assertEquals($this->getEncodeResult(), trim($result));
+        self::assertEquals($this->getEncodeResult(), $result);
     }
+    
+    public function testCanEncode(): void
+    {
+        $field = $this->getLandingPageField();
+        $subject = new PageBuilderFieldEncoder($this->blockAttributeEncoderManagerMock, $this->blockDefinitionFactoryMock);
 
+        self::assertTrue($subject->canEncode($field));
+    }
+    
     public function testDecode(): void
     {
-        $blockAttributeEncoderManagerMock = $this->getMockBuilder(BlockAttributeEncoderManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $blockDefinitionFactoryMock = $this->getMockBuilder(BlockDefinitionFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $blockAttributeEncoderManagerMock
+        $this->blockAttributeEncoderManagerMock
             ->expects(self::atLeastOnce())
             ->method('decode')
             ->withAnyParameters()
             ->willReturn(self::ATTRIBUTE_VALUE);
 
         $field = $this->getLandingPageField();
-        $subject = new PageBuilderFieldEncoder($blockAttributeEncoderManagerMock, $blockDefinitionFactoryMock);
-
-        self::assertTrue($subject->canDecode(get_class($field->value)));
+        $subject = new PageBuilderFieldEncoder($this->blockAttributeEncoderManagerMock, $this->blockDefinitionFactoryMock);
 
         $result = $subject->decode(
             $this->getEncodeResult(),
@@ -87,6 +86,14 @@ class PageBuilderFieldEncoderTest extends TestCase
 
         self::assertInstanceOf(Value::class, $result);
         self::assertEquals(new Value($this->getPage()), $result);
+    }
+    
+    public function testCanDecode(): void
+    {
+        $field = $this->getLandingPageField();
+        $subject = new PageBuilderFieldEncoder($this->blockAttributeEncoderManagerMock, $this->blockDefinitionFactoryMock);
+
+        self::assertTrue($subject->canDecode(get_class($field->value)));
     }
 
     private function getLandingPageField(): Field
@@ -101,12 +108,12 @@ class PageBuilderFieldEncoderTest extends TestCase
         ): bool {
             $initializer = null;
             $value = new Value($this->getPage());
-        
+
             return true;
         };
 
         $valueProxy = $proxyManager->createProxy(Value::class, $initializer);
-        
+
         return new Field([
             'fieldDefIdentifier' => 'field_landing_page',
             'value' => $valueProxy,
@@ -173,6 +180,7 @@ class PageBuilderFieldEncoderTest extends TestCase
     private function getEncodeResult(): string
     {
         return '<blocks><item key="1"><name>Code</name><attributes><content type="string">' .
-            self::ATTRIBUTE_VALUE . '</content></attributes></item></blocks>';
+            self::ATTRIBUTE_VALUE . '</content></attributes></item></blocks>
+';
     }
 }
