@@ -23,7 +23,7 @@ use EzSystems\EzPlatformPageFieldType\FieldType\Page\Block\Definition\BlockDefin
 use PHPUnit\Framework\TestCase;
 use ProxyManager\Proxy\LazyLoadingInterface;
 
-class PageBuilderFieldEncoderTest extends TestCase
+final class PageBuilderFieldEncoderTest extends TestCase
 {
     public const ATTRIBUTE_VALUE = 'ibexa';
 
@@ -34,8 +34,6 @@ class PageBuilderFieldEncoderTest extends TestCase
     private $blockDefinitionFactoryMock;
 
     public function setUp(): void {
-        parent::setUp();
-
         $this->blockAttributeEncoderManagerMock = $this->createMock(BlockAttributeEncoderManager::class);
         $this->blockDefinitionFactoryMock = $this->createMock(BlockDefinitionFactory::class);
     }
