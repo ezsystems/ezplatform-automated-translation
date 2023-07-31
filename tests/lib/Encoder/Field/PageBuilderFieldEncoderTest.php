@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Ibexa\Tests\AutomatedTranslation\Encoder\Field;
 
 use eZ\Publish\API\Repository\Values\Content\Field;
-use eZ\Publish\Core\Repository\ProxyFactory\ProxyGenerator;
 use EzSystems\EzPlatformAutomatedTranslation\Encoder\BlockAttribute\BlockAttributeEncoderManager;
 use EzSystems\EzPlatformAutomatedTranslation\Encoder\Field\PageBuilderFieldEncoder;
 use EzSystems\EzPlatformPageFieldType\FieldType\LandingPage\Model\Attribute;
@@ -21,7 +20,6 @@ use EzSystems\EzPlatformPageFieldType\FieldType\Page\Block\Definition\BlockAttri
 use EzSystems\EzPlatformPageFieldType\FieldType\Page\Block\Definition\BlockDefinition;
 use EzSystems\EzPlatformPageFieldType\FieldType\Page\Block\Definition\BlockDefinitionFactory;
 use PHPUnit\Framework\TestCase;
-use ProxyManager\Proxy\LazyLoadingInterface;
 
 final class PageBuilderFieldEncoderTest extends TestCase
 {
@@ -108,25 +106,9 @@ final class PageBuilderFieldEncoderTest extends TestCase
 
     private function getLandingPageField(): Field
     {
-        $proxyManager = new ProxyGenerator('var/cache/repository/proxy');
-        $initializer = function (
-            &$value,
-            LazyLoadingInterface $proxy,
-            $method,
-            array $parameters,
-            &$initializer
-        ): bool {
-            $initializer = null;
-            $value = new Value($this->getPage());
-
-            return true;
-        };
-
-        $valueProxy = $proxyManager->createProxy(Value::class, $initializer);
-
         return new Field([
             'fieldDefIdentifier' => 'field_landing_page',
-            'value' => $valueProxy,
+            'value' => new Value($this->getPage()),
         ]);
     }
 

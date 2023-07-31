@@ -42,7 +42,7 @@ final class PageBuilderFieldEncoder implements FieldEncoderInterface
 
     public function canDecode(string $type): bool
     {
-        return class_exists(Value::class) && is_subclass_of($type, Value::class);
+        return class_exists(Value::class) && is_a($type, Value::class, true);
     }
 
     public function encode(Field $field): string
