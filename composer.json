@@ -50,6 +50,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Ibexa\\Tests\\AutomatedTranslation\\": "tests/lib/",
             "EzSystems\\EzPlatformAutomatedTranslation\\Tests\\": "tests/lib/",
             "EzSystems\\EzPlatformAutomatedTranslationBundle\\Tests\\": "tests/bundle/"
         }

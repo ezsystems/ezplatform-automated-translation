@@ -21,8 +21,6 @@ final class PageBuilderFieldEncoder implements FieldEncoderInterface
 {
     private const CDATA_FAKER_TAG = 'fake_blocks_cdata';
 
-    private const XML_MARKUP = '<?xml version="1.0" encoding="UTF-8"?>';
-
     /** @var \EzSystems\EzPlatformAutomatedTranslation\Encoder\BlockAttribute\BlockAttributeEncoderManager */
     private $blockAttributeEncoderManager;
 
@@ -44,7 +42,7 @@ final class PageBuilderFieldEncoder implements FieldEncoderInterface
 
     public function canDecode(string $type): bool
     {
-        return class_exists(Value::class) && Value::class === $type;
+        return class_exists(Value::class) && is_a($type, Value::class, true);
     }
 
     public function encode(Field $field): string
